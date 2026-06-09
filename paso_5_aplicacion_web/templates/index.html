@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción con Red Neuronal - Inteligencia de Negocios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-violet: #8b5cf6;
+            --accent-violet-hover: #7c3aed;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --glow-color: rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 30px 5%;
+            background: rgba(11, 15, 25, 0.5);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-violet) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
+        }
+
+        .status-ready {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+        }
+
+        .status-warning {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: var(--accent-rose);
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 5%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(139, 92, 246, 0.25);
+            box-shadow: 0 10px 40px 0 rgba(139, 92, 246, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group.full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 600px) {
+            .input-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-violet);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px var(--glow-color);
+        }
+
+        .tooltip {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .btn-predict {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-violet-hover) 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .btn-predict {
+                grid-column: span 1;
+            }
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-predict:active {
+            transform: translateY(0);
+        }
+
+        /* Results Panel Styles */
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            min-height: 400px;
+            justify-content: center;
+        }
+
+        .placeholder-results {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px;
+        }
+
+        .placeholder-results svg {
+            width: 64px;
+            height: 64px;
+            stroke: var(--accent-violet);
+            opacity: 0.5;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        .placeholder-results h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .predictions-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .prediction-section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+            border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .result-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .result-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .badge-positive {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+        }
+
+        .badge-negative {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: var(--accent-rose);
+        }
+
+        .badge-neutral {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: var(--accent-cyan);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s cubic-bezier(0.1, 0.8, 0.3, 1);
+        }
+
+        .progress-bar.pink {
+            background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose));
+        }
+
+        .progress-bar.cyan {
+            background: linear-gradient(90deg, var(--accent-cyan), #3b82f6);
+        }
+
+        .progress-bar.emerald {
+            background: linear-gradient(90deg, var(--accent-emerald), #34d399);
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            border-top: 1px solid var(--card-border);
+            background: rgba(11, 15, 25, 0.3);
+            margin-top: auto;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-violet);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .train-warning {
+            padding: 20px;
+            background: rgba(244, 63, 94, 0.05);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .train-warning h3 {
+            color: var(--accent-rose);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .train-warning p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <h1>Sistema Predictivo Multitarea</h1>
+            <p>Red Neuronal Artificial para la toma de decisiones comerciales (BI3)</p>
+        </div>
+        <div>
+            {% if model_ready %}
+                <span class="status-badge status-ready">
+                    <span style="display:inline-block; width:8px; height:8px; background:var(--accent-emerald); border-radius:50%;"></span>
+                    Red Neuronal Lista
+                </span>
+            {% else %}
+                <span class="status-badge status-warning">
+                    <span style="display:inline-block; width:8px; height:8px; background:var(--accent-rose); border-radius:50%;"></span>
+                    Requiere Entrenamiento
+                </span>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        <!-- Formulario de Entrada -->
+        <section class="card">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke:var(--accent-violet);">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Datos de Entrada de la Transacción
+            </h2>
+            
+            {% if not model_ready %}
+                <div class="train-warning">
+                    <h3>¡Modelo no entrenado!</h3>
+                    <p>Para poder realizar predicciones, primero debes ejecutar el archivo <strong><code>python entrenar_red.py</code></strong> en tu consola para generar el modelo y los escaladores correspondientes.</p>
+                </div>
+            {% endif %}
+            
+            <form id="prediction-form" class="form-grid">
+                <div class="input-group">
+                    <label for="ingreso">Ingreso Generado ($)</label>
+                    <input type="number" id="ingreso" step="0.01" min="0.1" max="100.0" value="4.99" required>
+                    <span class="tooltip">Monto total pagado por el alquiler</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="veces_alquilada_pelicula">Popularidad de Película</label>
+                    <input type="number" id="veces_alquilada_pelicula" min="1" max="150" value="15" required>
+                    <span class="tooltip">Veces que esta película ha sido rentada</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="alquileres_por_cliente">Alquileres del Cliente</label>
+                    <input type="number" id="alquileres_por_cliente" min="1" max="150" value="25" required>
+                    <span class="tooltip">Rentas totales históricas del cliente</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="duracion_alquiler">Duración Alquiler (Días)</label>
+                    <input type="number" id="duracion_alquiler" min="1" max="30" value="5" required>
+                    <span class="tooltip">Días contratados para la posesión</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="pelicula_costo_reposicion">Costo Reposición ($)</label>
+                    <input type="number" id="pelicula_costo_reposicion" step="0.01" min="1.0" max="100.0" value="19.99" required>
+                    <span class="tooltip">Costo de reemplazar el disco físico</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="pelicula_duracion">Duración Película (Min)</label>
+                    <input type="number" id="pelicula_duracion" min="20" max="300" value="120" required>
+                    <span class="tooltip">Duración en minutos del filme</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="pelicula_precio_renta">Precio Catálogo ($)</label>
+                    <input type="number" id="pelicula_precio_renta" step="0.01" min="0.1" max="20.0" value="2.99" required>
+                    <span class="tooltip">Precio base del catálogo comercial</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="variedad_generos_cliente">Diversidad del Cliente</label>
+                    <input type="number" id="variedad_generos_cliente" min="1" max="16" value="8" required>
+                    <span class="tooltip">Cantidad de géneros diferentes consumidos</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="pelicula_cantidad_actores">Cantidad de Actores</label>
+                    <input type="number" id="pelicula_cantidad_actores" min="1" max="50" value="5" required>
+                    <span class="tooltip">Número de actores en el elenco principal</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="pelicula_popularidad_actores">Popularidad del Elenco</label>
+                    <input type="number" id="pelicula_popularidad_actores" min="1" max="1000" value="120" required>
+                    <span class="tooltip">Popularidad promedio (rentas) del reparto</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="genero">Género de la Película</label>
+                    <select id="genero" required>
+                        {% for g in generos %}
+                            <option value="{{ g }}" {% if g == 'Comedia' %}selected{% endif %}>{{ g }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="clasificacion">Clasificación por Edad</label>
+                    <select id="clasificacion" required>
+                        {% for c in clasificaciones %}
+                            <option value="{{ c }}" {% if c == 'PG' %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-predict" {% if not model_ready %}disabled style="opacity:0.5; cursor:not-allowed;"{% endif %}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6z"/>
+                    </svg>
+                    Realizar Predicción Multitarea
+                </button>
+            </form>
+        </section>
+
+        <!-- Resultados de la Predicción -->
+        <section class="card">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke:var(--accent-cyan);">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                Predicciones y Decisiones de BI
+            </h2>
+
+            <div class="results-container">
+                <!-- Loader -->
+                <div id="loader" class="placeholder-results" style="display: none;">
+                    <div class="spinner"></div>
+                    <h3>Procesando con la Red Neuronal...</h3>
+                    <p>Escalando entradas y ejecutando alimentación hacia adelante en TensorFlow.</p>
+                </div>
+
+                <!-- Estado Inicial / Placeholder -->
+                <div id="placeholder" class="placeholder-results">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v13.01c0 .614-.764.921-1.2.485L5.79 13.84a.75.75 0 0 1 1.06-1.06l1.4 1.4V3.104a.75.75 0 0 1 1.5 0Zm6.88 0v13.01c0 .614.764.921 1.2.485l2.76-2.76a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0l-4.24-4.24a.75.75 0 1 1 1.06-1.06l2.76 2.76c.436.436 1.2.129 1.2-.485V3.104a.75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                    <h3>Esperando Variables</h3>
+                    <p>Complete el formulario y presione "Realizar Predicción Multitarea" para ver los resultados estimados de negocio.</p>
+                </div>
+
+                <!-- Lista de Predicciones Reales -->
+                <div id="results-panel" class="predictions-grid" style="display: none;">
+                    
+                    <div class="prediction-section-title">Clasificación Binaria</div>
+                    
+                    <!-- es_ingreso_alto -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Ingreso de Alto Valor</span>
+                            <span id="badge-ingreso" class="result-badge">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-ingreso" class="progress-bar pink" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Probabilidad de ser alto</span>
+                            <span id="txt-ingreso">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- renta_fin_de_semana -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Ocurrencia en Fin de Semana</span>
+                            <span id="badge-fds" class="result-badge">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-fds" class="progress-bar pink" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Probabilidad de fin de semana</span>
+                            <span id="txt-fds">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- cliente_prefiere_genero -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Afinidad por el Género</span>
+                            <span id="badge-pref" class="result-badge">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-pref" class="progress-bar pink" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Probabilidad de afinidad</span>
+                            <span id="txt-pref">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- renta_larga -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Renta de Larga Duración</span>
+                            <span id="badge-larga" class="result-badge">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-larga" class="progress-bar pink" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Probabilidad de larga posesión</span>
+                            <span id="txt-larga">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="prediction-section-title" style="margin-top: 15px;">Clasificación Multiclase</div>
+
+                    <!-- rango_precio_renta -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Rango Tarifario de Alquiler</span>
+                            <span id="badge-precio" class="result-badge badge-neutral">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-precio" class="progress-bar cyan" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Confianza del modelo</span>
+                            <span id="txt-precio">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- grupo_edad_pelicula -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Segmento de Audiencia</span>
+                            <span id="badge-edad" class="result-badge badge-neutral">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-edad" class="progress-bar emerald" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Confianza del modelo</span>
+                            <span id="txt-edad">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- nivel_fidelidad_cliente -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Fidelidad del Cliente</span>
+                            <span id="badge-fidelidad" class="result-badge badge-neutral">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-fidelidad" class="progress-bar cyan" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Confianza del modelo</span>
+                            <span id="txt-fidelidad">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- popularidad_pelicula -->
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">Nivel de Demanda del Título</span>
+                            <span id="badge-pop" class="result-badge badge-neutral">--</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="bar-pop" class="progress-bar emerald" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Confianza del modelo</span>
+                            <span id="txt-pop">0%</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Universidad Técnica de Ambato - Carrera de Software - Inteligencia de Negocios - Proyecto BI3</p>
+    </footer>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Mostrar Loader, ocultar otros
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('results-panel').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+            
+            // Recoger datos
+            const payload = {
+                ingreso: parseFloat(document.getElementById('ingreso').value),
+                veces_alquilada_pelicula: parseFloat(document.getElementById('veces_alquilada_pelicula').value),
+                alquileres_por_cliente: parseFloat(document.getElementById('alquileres_por_cliente').value),
+                duracion_alquiler: parseFloat(document.getElementById('duracion_alquiler').value),
+                pelicula_costo_reposicion: parseFloat(document.getElementById('pelicula_costo_reposicion').value),
+                pelicula_duracion: parseFloat(document.getElementById('pelicula_duracion').value),
+                pelicula_precio_renta: parseFloat(document.getElementById('pelicula_precio_renta').value),
+                variedad_generos_cliente: parseFloat(document.getElementById('variedad_generos_cliente').value),
+                pelicula_cantidad_actores: parseFloat(document.getElementById('pelicula_cantidad_actores').value),
+                pelicula_popularidad_actores: parseFloat(document.getElementById('pelicula_popularidad_actores').value),
+                genero: document.getElementById('genero').value,
+                clasificacion: document.getElementById('clasificacion').value
+            };
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al procesar la respuesta de la red neuronal.');
+                }
+                
+                const data = await response.json();
+                
+                // Ocultar Loader y mostrar panel de resultados
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('results-panel').style.display = 'flex';
+                
+                // Actualizar binarias
+                // es_ingreso_alto
+                const pIngreso = data.es_ingreso_alto.probabilidad;
+                document.getElementById('txt-ingreso').innerText = pIngreso.toFixed(1) + '%';
+                document.getElementById('bar-ingreso').style.width = pIngreso + '%';
+                const bIngreso = document.getElementById('badge-ingreso');
+                bIngreso.innerText = data.es_ingreso_alto.etiqueta;
+                bIngreso.className = 'result-badge ' + (pIngreso >= 50 ? 'badge-positive' : 'badge-negative');
+
+                // renta_fin_de_semana
+                const pFds = data.renta_fin_de_semana.probabilidad;
+                document.getElementById('txt-fds').innerText = pFds.toFixed(1) + '%';
+                document.getElementById('bar-fds').style.width = pFds + '%';
+                const bFds = document.getElementById('badge-fds');
+                bFds.innerText = data.renta_fin_de_semana.etiqueta;
+                bFds.className = 'result-badge ' + (pFds >= 50 ? 'badge-positive' : 'badge-neutral');
+
+                // cliente_prefiere_genero
+                const pPref = data.cliente_prefiere_genero.probabilidad;
+                document.getElementById('txt-pref').innerText = pPref.toFixed(1) + '%';
+                document.getElementById('bar-pref').style.width = pPref + '%';
+                const bPref = document.getElementById('badge-pref');
+                bPref.innerText = data.cliente_prefiere_genero.etiqueta;
+                bPref.className = 'result-badge ' + (pPref >= 50 ? 'badge-positive' : 'badge-negative');
+
+                // renta_larga
+                const pLarga = data.renta_larga.probabilidad;
+                document.getElementById('txt-larga').innerText = pLarga.toFixed(1) + '%';
+                document.getElementById('bar-larga').style.width = pLarga + '%';
+                const bLarga = document.getElementById('badge-larga');
+                bLarga.innerText = data.renta_larga.etiqueta;
+                bLarga.className = 'result-badge ' + (pLarga >= 50 ? 'badge-positive' : 'badge-neutral');
+
+                // Actualizar multiclases
+                // rango_precio_renta
+                const pPrecioMax = data.rango_precio_renta.probabilidades[data.rango_precio_renta.ganador] * 100;
+                document.getElementById('txt-precio').innerText = pPrecioMax.toFixed(1) + '% de confianza';
+                document.getElementById('bar-precio').style.width = pPrecioMax + '%';
+                document.getElementById('badge-precio').innerText = data.rango_precio_renta.etiqueta;
+
+                // grupo_edad_pelicula
+                const pEdadMax = data.grupo_edad_pelicula.probabilidades[data.grupo_edad_pelicula.ganador] * 100;
+                document.getElementById('txt-edad').innerText = pEdadMax.toFixed(1) + '% de confianza';
+                document.getElementById('bar-edad').style.width = pEdadMax + '%';
+                document.getElementById('badge-edad').innerText = data.grupo_edad_pelicula.etiqueta;
+
+                // nivel_fidelidad_cliente
+                const pFidMax = data.nivel_fidelidad_cliente.probabilidades[data.nivel_fidelidad_cliente.ganador] * 100;
+                document.getElementById('txt-fidelidad').innerText = pFidMax.toFixed(1) + '% de confianza';
+                document.getElementById('bar-fidelidad').style.width = pFidMax + '%';
+                document.getElementById('badge-fidelidad').innerText = data.nivel_fidelidad_cliente.etiqueta;
+
+                // popularidad_pelicula
+                const pPopMax = data.popularidad_pelicula.probabilidades[data.popularidad_pelicula.ganador] * 100;
+                document.getElementById('txt-pop').innerText = pPopMax.toFixed(1) + '% de confianza';
+                document.getElementById('bar-pop').style.width = pPopMax + '%';
+                document.getElementById('badge-pop').innerText = data.popularidad_pelicula.etiqueta;
+                
+            } catch (err) {
+                alert('Ocurrió un error al realizar la predicción: ' + err.message);
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('placeholder').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+# =============================================================================
+# .gitignore — U2_PROYECTO_BI
+# Red Neuronal Multitarea para Alquileres de Películas
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Modelos entrenados (archivos grandes — usar Git LFS si se necesitan versionar)
+# -----------------------------------------------------------------------------
+*.keras
+*.h5
+*.pb
+*.ckpt
+*.ckpt.*
+saved_model/
+
+# Escaladores serializados
+*.joblib
+*.pkl
+*.pickle
+
+# -----------------------------------------------------------------------------
+# Datasets generados (se pueden regenerar ejecutando los scripts)
+# -----------------------------------------------------------------------------
+paso_2_dataset/dataset_base.csv
+paso_2_dataset/dataset_neuronal.csv
+
+# -----------------------------------------------------------------------------
+# Imágenes generadas por el EDA (se regeneran con analisis_exploratorio.py)
+# -----------------------------------------------------------------------------
+paso_3_eda/imagenes/
+
+# Imágenes del informe (copia de las del EDA)
+informe/imagenes/
+
+# Informe HTML generado
+informe/informe_proyecto_bi3.html
+
+# -----------------------------------------------------------------------------
+# Python — caché y bytecode
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# -----------------------------------------------------------------------------
+# Entornos virtuales
+# -----------------------------------------------------------------------------
+venv/
+env/
+.env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# -----------------------------------------------------------------------------
+# Variables de entorno y configuración local
+# -----------------------------------------------------------------------------
+.env
+.env.local
+*.env
+
+# -----------------------------------------------------------------------------
+# Jupyter Notebooks — checkpoints
+# -----------------------------------------------------------------------------
+.ipynb_checkpoints/
+*.ipynb
+
+# -----------------------------------------------------------------------------
+# Distribuciones y builds de Python
+# -----------------------------------------------------------------------------
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+wheels/
+pip-wheel-metadata/
+
+# -----------------------------------------------------------------------------
+# IDEs y editores
+# -----------------------------------------------------------------------------
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# Spyder
+.spyproject/
+.spyderproject.files
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# -----------------------------------------------------------------------------
+# Sistemas operativos
+# -----------------------------------------------------------------------------
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+# -----------------------------------------------------------------------------
+# Logs y archivos temporales
+# -----------------------------------------------------------------------------
+*.log
+*.tmp
+*.temp
+logs/
+temp/
+
+# TensorFlow / Keras logs de entrenamiento
+logs/
+tensorboard_logs/
+
+# -----------------------------------------------------------------------------
+# Archivos de cobertura y tests
+# -----------------------------------------------------------------------------
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.pytest_cache/
+nosetests.xml
+test-results/
+
+# -----------------------------------------------------------------------------
+# Archivos de prueba y temporales del proyecto
+# -----------------------------------------------------------------------------
+test_columns.py
+scratch/
