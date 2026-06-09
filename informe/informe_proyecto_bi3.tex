@@ -206,6 +206,61 @@ La inteligencia de negocios ofrece herramientas para transformar esos registros 
   \end{enumerate}
 \end{itemize}
 
+\section{Preguntas de negocio de la carta de diseño}
+\label{sec:preguntas-negocio}
+
+La carta de diseño del proyecto planteó ocho preguntas de negocio que orientaron la selección de variables, el diseño de etiquetas y el alcance del modelo. La Tabla~\ref{tab:preguntas-negocio} muestra cómo cada pregunta es respondida por alguna de las ocho salidas de la red neuronal multitarea o por las variables de entrada calculadas a partir del historial.
+
+\begin{table}[H]
+\centering
+\caption{Correspondencia entre las preguntas de la carta de diseño y las salidas del modelo}
+\label{tab:preguntas-negocio}
+\rowcolors{2}{gris-claro}{white}
+\small
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{} p{0.22\linewidth} p{0.24\linewidth} p{0.48\linewidth} @{}}
+\toprule
+\textbf{Objetivo de negocio} & \textbf{Indicador solicitado} & \textbf{Cómo lo responde el modelo} \\
+\midrule
+Analizar ingresos del negocio &
+  Ingresos totales por periodo &
+  \variable{es\_ingreso\_alto} predice si el alquiler supera el percentil~75 de su género; \variable{rango\_precio\_renta} clasifica la tarifa en Económico / Estándar / Premium. \\
+
+Identificar categorías más rentables &
+  Ingresos por categoría &
+  \variable{cliente\_prefiere\_genero} + \variable{es\_ingreso\_alto} identifican qué géneros concentran los alquileres más rentables. \\
+
+Evaluar rotación de inventario &
+  N.º de alquileres por película &
+  \variable{popularidad\_pelicula} clasifica cada título en Baja / Media / Alta según sus rentas históricas acumuladas. \\
+
+Analizar valor del cliente &
+  Ingreso total por cliente &
+  \variable{nivel\_fidelidad\_cliente} segmenta en Bronce / Plata / Oro; junto con \variable{es\_ingreso\_alto} identifica los clientes de mayor valor. \\
+
+Evaluar rendimiento de tiendas &
+  Ingresos por tienda &
+  \textit{Fuera del alcance:} el dataset no incluye la variable tienda; alcance para una versión futura. \\
+
+Analizar demanda geográfica &
+  Alquileres por ciudad &
+  \textit{Fuera del alcance:} la localización geográfica no está en el vector de entrada; requeriría enriquecer el dataset. \\
+
+Analizar popularidad de actores &
+  Alquileres por actor &
+  \variable{pelicula\_popularidad\_actores} (popularidad promedio del elenco) es variable de entrada; su influencia sobre \variable{popularidad\_pelicula} cuantifica el impacto del reparto. \\
+
+Detectar estacionalidad &
+  Patrones por mes / época &
+  \variable{renta\_fin\_de\_semana} detecta el patrón temporal más inmediato; extensión a patrones mensuales prevista como trabajo futuro. \\
+
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+Las dos preguntas marcadas como \textit{Fuera del alcance actual} ---rendimiento de tiendas y demanda geográfica--- no pudieron abordarse porque los documentos de la colección \texttt{alquileres} en MongoDB no incluyen identificador de tienda ni atributos geográficos del cliente. Su incorporación requeriría unir la colección con las tablas \texttt{store} y \texttt{address} del modelo relacional original de Sakila.
+
 \section{Alcance}
 
 El sistema opera sobre el historial almacenado en MongoDB y no contempla reentrenamiento automático ante nuevos datos. La interfaz web cubre el flujo de predicción para una transacción individual.

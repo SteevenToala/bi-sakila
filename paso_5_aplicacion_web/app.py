@@ -72,6 +72,117 @@ COLUMNAS_NORMALIZADAS_MINMAX = [
 ]
 
 # --------------------------------------------------------------------------
+# Lookups de MongoDB: películas y clientes precalculados al iniciar
+# --------------------------------------------------------------------------
+peliculas_lookup     = {}   # id_pelicula (int) -> dict con todos los campos
+clientes_lookup      = {}   # id_cliente  (int) -> dict con nombre y métricas
+lookups_mongo_listos = False
+
+
+def _cargar_lookups_desde_mongo() -> bool:
+    """
+    Conecta a MongoDB BI_Final.alquileres y precalcula en memoria:
+      - Para cada película: veces_alquilada, popularidad_actores y atributos estáticos.
+      - Para cada cliente:  nombre_completo, alquileres totales, variedad de géneros.
+    Se llama una sola vez al inicio. Si MongoDB no está disponible, retorna False
+    y el formulario manual sigue funcionando como siempre.
+    """
+    global peliculas_lookup, clientes_lookup, lookups_mongo_listos
+    try:
+        from pymongo import MongoClient
+        from collections import Counter, defaultdict
+
+        mg = MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=3000)
+        mg.admin.command("ping")          # falla rápido si no hay conexión
+        db = mg["BI_Final"]
+
+        docs = list(db.alquileres.find({}, {
+            "_id": 0, "pelicula": 1, "categoria": 1, "cliente": 1
+        }))
+
+        if not docs:
+            return False
+
+        # --- Popularidad global de cada actor ---
+        conteo_actores = Counter()
+        for doc in docs:
+            for info in doc.get("pelicula", {}).get("actores", {}).values():
+                nombre = info.get("nombre_actor", "")
+                if nombre:
+                    conteo_actores[nombre] += 1
+
+        # --- Películas ---
+        conteo_peli = Counter()
+        datos_peli_tmp = {}
+        for doc in docs:
+            peli = doc.get("pelicula", {})
+            cat  = doc.get("categoria", {})
+            id_p = peli.get("id_pelicula")
+            if id_p is None:
+                continue
+            conteo_peli[id_p] += 1
+            if id_p not in datos_peli_tmp:
+                nombres_actores = [
+                    info.get("nombre_actor", "")
+                    for info in peli.get("actores", {}).values()
+                    if info.get("nombre_actor")
+                ]
+                pop = (
+                    round(sum(conteo_actores[n] for n in nombres_actores) / len(nombres_actores), 2)
+                    if nombres_actores else 0.0
+                )
+                datos_peli_tmp[id_p] = {
+                    "id_pelicula":          id_p,
+                    "titulo":               peli.get("titulo", ""),
+                    "duracion":             peli.get("duracion", 120),
+                    "clasificacion":        peli.get("clasificacion", "PG"),
+                    "precio_renta":         peli.get("precio_renta", 2.99),
+                    "costo_reposicion":     peli.get("costo_reposicion", 19.99),
+                    "cantidad_actores":     peli.get("cantidad_actores", 5),
+                    "categoria":            cat.get("nombre", "Comedia"),
+                    "popularidad_actores":  pop,
+                }
+
+        for id_p, data in datos_peli_tmp.items():
+            data["veces_alquilada"] = conteo_peli[id_p]
+        peliculas_lookup = datos_peli_tmp
+
+        # --- Clientes ---
+        conteo_cli  = Counter()
+        generos_cli = defaultdict(set)
+        nombres_cli = {}
+        for doc in docs:
+            cli = doc.get("cliente", {})
+            cat = doc.get("categoria", {})
+            id_c = cli.get("id_cliente")
+            if id_c is None:
+                continue
+            conteo_cli[id_c] += 1
+            generos_cli[id_c].add(cat.get("nombre", ""))
+            if id_c not in nombres_cli:
+                nombres_cli[id_c] = cli.get("nombre_completo") or f"Cliente {id_c}"
+
+        clientes_lookup = {
+            id_c: {
+                "id_cliente":       id_c,
+                "nombre_completo":  nombre,
+                "alquileres":       conteo_cli[id_c],
+                "variedad_generos": len(generos_cli[id_c]),
+            }
+            for id_c, nombre in nombres_cli.items()
+        }
+
+        mg.close()
+        lookups_mongo_listos = True
+        print(f"  ✓ Lookups MongoDB: {len(peliculas_lookup)} películas, {len(clientes_lookup)} clientes.")
+        return True
+
+    except Exception as err:
+        print(f"  [!] Lookups MongoDB no disponibles: {err}")
+        return False
+
+
+# --------------------------------------------------------------------------
 # Carga lazy del modelo y escaladores (se cargan una sola vez en memoria)
 # --------------------------------------------------------------------------
 modelo_cargado    = None
@@ -235,15 +346,31 @@ def interpretar_predicciones_de_la_red(predicciones_brutas: list) -> dict:
 @app.route("/")
 def pagina_inicio():
     """
-    Renderiza la página principal del sistema de predicción.
-    Verifica si el modelo ya fue entrenado para mostrar el estado correcto.
+    Renderiza la página principal. Carga los lookups de MongoDB la primera vez.
     """
+    if not lookups_mongo_listos:
+        _cargar_lookups_desde_mongo()
     return render_template(
         "index.html",
         model_ready=os.path.exists(RUTA_MODELO_PRINCIPAL),
+        lookups_disponibles=lookups_mongo_listos,
         generos=GENEROS_DE_PELICULAS,
         clasificaciones=CLASIFICACIONES_DE_EDAD,
     )
+
+
+@app.route("/api/peliculas")
+def endpoint_peliculas():
+    """Lista de películas únicas con sus atributos y métricas precalculadas."""
+    peliculas_lista = sorted(peliculas_lookup.values(), key=lambda p: p.get("titulo", ""))
+    return jsonify(peliculas_lista)
+
+
+@app.route("/api/clientes")
+def endpoint_clientes():
+    """Lista de clientes únicos con nombre y métricas precalculadas."""
+    clientes_lista = sorted(clientes_lookup.values(), key=lambda c: c.get("nombre_completo", ""))
+    return jsonify(clientes_lista)
 
 
 @app.route("/metricas")
