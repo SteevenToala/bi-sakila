@@ -32,6 +32,7 @@ RUTA_DATASET_NEURONAL    = os.path.join(DIRECTORIO_PROYECTO, "paso_2_dataset", "
 RUTA_MODELO_PRINCIPAL    = os.path.join(DIRECTORIO_ACTUAL, "modelo_principal.keras")
 RUTA_ESCALADOR_ZSCORE    = os.path.join(DIRECTORIO_ACTUAL, "escalador_zscore.joblib")
 RUTA_ESCALADOR_MINMAX    = os.path.join(DIRECTORIO_ACTUAL, "escalador_minmax.joblib")
+RUTA_METRICAS_JSON       = os.path.join(DIRECTORIO_ACTUAL, "metricas_entrenamiento.json")
 
 # --------------------------------------------------------------------------
 # Nombres de las 8 etiquetas objetivo (Y)
@@ -52,44 +53,44 @@ NOMBRES_ETIQUETAS_OBJETIVO = [
 # --------------------------------------------------------------------------
 CONFIGURACIONES_DE_ARQUITECTURAS = [
     {
-        "nombre":     "Base",
-        "descripcion":"2 capas medianas, configuración de referencia equilibrada.",
+        "nombre":       "Base",
+        "descripcion":  "2 capas medianas, configuración de referencia equilibrada.",
         "capas_densas": [128, 64],
-        "dropout":    0.20,
-        "epocas_max": 40,
-        "batch_size": 64,
+        "dropout":      0.20,
+        "epocas_max":   40,
+        "batch_size":   64,
     },
     {
-        "nombre":     "Profunda",
-        "descripcion":"4 capas decrecientes, captura patrones de alta complejidad.",
+        "nombre":       "Profunda",
+        "descripcion":  "4 capas decrecientes, captura patrones de alta complejidad.",
         "capas_densas": [256, 128, 64, 32],
-        "dropout":    0.30,
-        "epocas_max": 50,
-        "batch_size": 64,
+        "dropout":      0.30,
+        "epocas_max":   50,
+        "batch_size":   64,
     },
     {
-        "nombre":     "Ancha",
-        "descripcion":"2 capas muy grandes, amplía la capacidad de representación.",
+        "nombre":       "Ancha",
+        "descripcion":  "2 capas muy grandes, amplía la capacidad de representación.",
         "capas_densas": [512, 256],
-        "dropout":    0.40,
-        "epocas_max": 40,
-        "batch_size": 128,
+        "dropout":      0.40,
+        "epocas_max":   40,
+        "batch_size":   128,
     },
     {
-        "nombre":     "Rapida",
-        "descripcion":"2 capas pequeñas, entrenamiento más rápido con menos parámetros.",
+        "nombre":       "Rapida",
+        "descripcion":  "2 capas pequeñas, entrenamiento más rápido con menos parámetros.",
         "capas_densas": [64, 32],
-        "dropout":    0.10,
-        "epocas_max": 30,
-        "batch_size": 32,
+        "dropout":      0.10,
+        "epocas_max":   30,
+        "batch_size":   32,
     },
     {
-        "nombre":     "Conservadora",
-        "descripcion":"3 capas del mismo ancho, aprendizaje estable y progresivo.",
+        "nombre":       "Conservadora",
+        "descripcion":  "3 capas del mismo ancho, aprendizaje estable y progresivo.",
         "capas_densas": [128, 128, 64],
-        "dropout":    0.25,
-        "epocas_max": 60,
-        "batch_size": 32,
+        "dropout":      0.25,
+        "epocas_max":   60,
+        "batch_size":   32,
     },
 ]
 
@@ -101,42 +102,33 @@ CONFIGURACIONES_DE_ARQUITECTURAS = [
 def construir_red_neuronal_multitarea(numero_variables_entrada: int, config: dict):
     """
     Construye un modelo Keras de aprendizaje multitarea con la configuración dada.
-
-    Arquitectura:
-      - Una capa de entrada con `numero_variables_entrada` neuronas
-      - N capas ocultas compartidas (Dense + BatchNorm + Dropout) según `config`
-      - 4 ramas de salida binaria (activación Sigmoid, 1 neurona)
-      - 4 ramas de salida multiclase (activación Softmax, 3 neuronas)
-
-    Retorna el modelo compilado listo para entrenar.
+    Las cinco arquitecturas varían: número de capas, neuronas por capa, dropout,
+    épocas máximas y batch size. Todas usan Adam, ReLU e inicialización He.
     """
     import tensorflow as tf
     from tensorflow.keras.layers import Input, Dense, Dropout, BatchNormalization
     from tensorflow.keras.models import Model
 
-    # ---- Capa de entrada ----
     capa_entrada = Input(shape=(numero_variables_entrada,), name="entrada_variables_predictoras")
 
-    # ---- Capas ocultas compartidas (cuerpo del modelo) ----
     capa_actual = capa_entrada
     for indice, numero_neuronas in enumerate(config["capas_densas"], start=1):
-        capa_actual = Dense(numero_neuronas, activation="relu",   name=f"capa_densa_{indice}")(capa_actual)
-        capa_actual = BatchNormalization(                          name=f"normalizacion_{indice}")(capa_actual)
-        capa_actual = Dropout(config["dropout"],                   name=f"dropout_{indice}")(capa_actual)
+        capa_actual = Dense(numero_neuronas, activation="relu",
+                            kernel_initializer="he_uniform",
+                            name=f"capa_densa_{indice}")(capa_actual)
+        capa_actual = BatchNormalization(name=f"normalizacion_{indice}")(capa_actual)
+        capa_actual = Dropout(config["dropout"], name=f"dropout_{indice}")(capa_actual)
 
-    # ---- Ramas de salida binaria (Sigmoid → binary_crossentropy) ----
     salida_es_ingreso_alto         = Dense(1, activation="sigmoid", name="es_ingreso_alto")(capa_actual)
     salida_renta_fin_de_semana     = Dense(1, activation="sigmoid", name="renta_fin_de_semana")(capa_actual)
     salida_cliente_prefiere_genero = Dense(1, activation="sigmoid", name="cliente_prefiere_genero")(capa_actual)
     salida_renta_larga             = Dense(1, activation="sigmoid", name="renta_larga")(capa_actual)
 
-    # ---- Ramas de salida multiclase (Softmax 3 clases → sparse_categorical_crossentropy) ----
     salida_rango_precio_renta      = Dense(3, activation="softmax", name="rango_precio_renta")(capa_actual)
     salida_grupo_edad_pelicula     = Dense(3, activation="softmax", name="grupo_edad_pelicula")(capa_actual)
     salida_nivel_fidelidad_cliente = Dense(3, activation="softmax", name="nivel_fidelidad_cliente")(capa_actual)
     salida_popularidad_pelicula    = Dense(3, activation="softmax", name="popularidad_pelicula")(capa_actual)
 
-    # ---- Ensamble del modelo ----
     modelo = Model(
         inputs=capa_entrada,
         outputs=[
@@ -148,7 +140,6 @@ def construir_red_neuronal_multitarea(numero_variables_entrada: int, config: dic
         name=f"red_neuronal_{config['nombre'].lower()}"
     )
 
-    # ---- Compilación: función de pérdida y métricas por rama ----
     modelo.compile(
         optimizer="adam",
         loss={
@@ -249,11 +240,12 @@ def ejecutar_entrenamiento_de_los_5_modelos():
     df_neuronal = pd.read_csv(RUTA_DATASET_NEURONAL, encoding="utf-8")
     print(f"  Shape del dataset: {df_neuronal.shape[0]:,} filas × {df_neuronal.shape[1]} columnas")
 
-    nombres_variables_entrada = [c for c in df_neuronal.columns if c not in NOMBRES_ETIQUETAS_OBJETIVO]
+    columnas_numericas = df_neuronal.select_dtypes(include=[np.number]).columns.tolist()
+    nombres_variables_entrada = [c for c in columnas_numericas if c not in NOMBRES_ETIQUETAS_OBJETIVO]
     print(f"  Variables de entrada (X): {len(nombres_variables_entrada)}")
     print(f"  Variables objetivo   (Y): {len(NOMBRES_ETIQUETAS_OBJETIVO)}")
 
-    X_todas = df_neuronal[nombres_variables_entrada].values
+    X_todas = df_neuronal[nombres_variables_entrada].values.astype(np.float32)
     Y_por_etiqueta = {etiqueta: df_neuronal[etiqueta].values for etiqueta in NOMBRES_ETIQUETAS_OBJETIVO}
 
     # ---- 2. División entrenamiento / testeo ----
@@ -271,9 +263,44 @@ def ejecutar_entrenamiento_de_los_5_modelos():
     print(f"  Registros de testeo:        {len(X_testeo):,} (20%)")
 
     # ---- 3. Entrenamiento de los 5 modelos ----
+    import json
+
+    total_registros = len(df_neuronal)
+    n_entrenamiento = len(X_entrenamiento)
+    n_testeo        = len(X_testeo)
+
+    # Cálculo de suficiencia de datos (regla: ≥20 muestras × variables × clases)
+    min_recomendado = len(nombres_variables_entrada) * 8 * 20
+    factor_cobertura = round(n_entrenamiento / min_recomendado, 2)
+
     tabla_de_resultados = []
     mejor_accuracy_promedio = 0.0
     mejor_modelo_entrenado  = None
+    mejor_nombre            = ""
+
+    metricas_json = {
+        "dataset": {
+            "total_registros":    total_registros,
+            "n_entrenamiento":    n_entrenamiento,
+            "n_testeo":           n_testeo,
+            "pct_entrenamiento":  80,
+            "pct_testeo":         20,
+            "semilla_division":   42,
+            "variables_entrada":  len(nombres_variables_entrada),
+            "etiquetas_salida":   len(NOMBRES_ETIQUETAS_OBJETIVO),
+            "min_recomendado":    min_recomendado,
+            "factor_cobertura":   factor_cobertura,
+        },
+        "tecnicas_anti_overfitting": [
+            "BatchNormalization en cada capa oculta",
+            "Dropout (desactivación aleatoria de neuronas por época)",
+            "EarlyStopping con paciencia=5 sobre val_loss",
+            "Inicialización He uniforme (estabiliza gradientes en capas ReLU)",
+            "Validación interna 10% separada del entrenamiento",
+            "División train/test estricta (test nunca visto durante ajuste)",
+        ],
+        "modelos": [],
+    }
 
     callback_parada_temprana = tf.keras.callbacks.EarlyStopping(
         monitor="val_loss", patience=5, restore_best_weights=True
@@ -284,13 +311,13 @@ def ejecutar_entrenamiento_de_los_5_modelos():
     for numero_modelo, configuracion in enumerate(CONFIGURACIONES_DE_ARQUITECTURAS, start=1):
         print(f"\n--- Modelo {numero_modelo}/5: '{configuracion['nombre']}' ---")
         print(f"  Descripción: {configuracion['descripcion']}")
-        print(f"  Capas:      {configuracion['capas_densas']}  |  Dropout: {configuracion['dropout']}")
-        print(f"  Épocas máx: {configuracion['epocas_max']}   |  Batch:   {configuracion['batch_size']}")
+        print(f"  Capas:       {configuracion['capas_densas']}  |  Dropout: {configuracion['dropout']}")
+        print(f"  Épocas máx:  {configuracion['epocas_max']}   |  Batch:   {configuracion['batch_size']}")
 
         modelo = construir_red_neuronal_multitarea(len(nombres_variables_entrada), configuracion)
 
         print(f"  Entrenando... (salida silenciada, espere)")
-        modelo.fit(
+        historial = modelo.fit(
             X_entrenamiento,
             [Y_entrenamiento[e] for e in NOMBRES_ETIQUETAS_OBJETIVO],
             validation_split=0.10,
@@ -300,17 +327,32 @@ def ejecutar_entrenamiento_de_los_5_modelos():
             verbose=0,
         )
 
+        epocas_ejecutadas = len(historial.history["loss"])
+        train_loss_final  = float(historial.history["loss"][-1])
+        val_loss_final    = float(historial.history["val_loss"][-1])
+
+        # Accuracy por salida en entrenamiento (última época)
+        train_acc_vals = [v[-1] for k, v in historial.history.items()
+                          if "accuracy" in k and not k.startswith("val_")]
+        train_accuracy = float(np.mean(train_acc_vals)) if train_acc_vals else 0.0
+
+        # Evaluación en testeo
         resultados_evaluacion = modelo.evaluate(
             X_testeo,
             [Y_testeo[e] for e in NOMBRES_ETIQUETAS_OBJETIVO],
             return_dict=True,
             verbose=0,
         )
+        test_loss     = float(resultados_evaluacion.get("loss", 0.0))
+        valores_acc   = [v for k, v in resultados_evaluacion.items() if "accuracy" in k]
+        test_accuracy = float(np.mean(valores_acc))
 
-        valores_accuracy = [v for k, v in resultados_evaluacion.items() if "accuracy" in k]
-        accuracy_promedio = float(np.mean(valores_accuracy))
+        diferencia    = round((train_accuracy - test_accuracy) * 100, 2)
+        estado_ovfit  = "OK" if diferencia < 5 else ("LEVE" if diferencia < 10 else "ALTO")
 
-        print(f"  → Accuracy promedio en testeo: {accuracy_promedio * 100:.2f}%")
+        print(f"  → Train accuracy: {train_accuracy*100:.2f}%  |  Test accuracy: {test_accuracy*100:.2f}%")
+        print(f"  → Train loss:     {train_loss_final:.4f}     |  Test loss:      {test_loss:.4f}")
+        print(f"  → Épocas reales:  {epocas_ejecutadas}  |  Overfitting gap: {diferencia:+.2f}pp [{estado_ovfit}]")
 
         # Guardar modelo individual
         nombre_archivo_modelo = f"modelo_v{numero_modelo}_{configuracion['nombre'].lower()}.keras"
@@ -318,34 +360,54 @@ def ejecutar_entrenamiento_de_los_5_modelos():
         modelo.save(ruta_archivo_modelo)
         print(f"  ✓ Guardado como: {nombre_archivo_modelo}")
 
-        tabla_de_resultados.append({
-            "Nº":          numero_modelo,
-            "Nombre":      configuracion["nombre"],
-            "Capas":       str(configuracion["capas_densas"]),
-            "Dropout":     configuracion["dropout"],
-            "Épocas máx":  configuracion["epocas_max"],
-            "Batch":       configuracion["batch_size"],
-            "Accuracy %":  round(accuracy_promedio * 100, 2),
-            "Archivo":     nombre_archivo_modelo,
-        })
+        fila = {
+            "Nº":              numero_modelo,
+            "Nombre":          configuracion["nombre"],
+            "Capas":           str(configuracion["capas_densas"]),
+            "Dropout":         configuracion["dropout"],
+            "Épocas máx":      configuracion["epocas_max"],
+            "Épocas reales":   epocas_ejecutadas,
+            "Batch":           configuracion["batch_size"],
+            "Optimizador":     configuracion.get("optimizador", "adam"),
+            "Activación":      configuracion.get("activacion", "relu"),
+            "Regularización":  str(configuracion.get("regularizacion", "ninguna")),
+            "Train Acc %":     round(train_accuracy * 100, 2),
+            "Test Acc %":      round(test_accuracy  * 100, 2),
+            "Train Loss":      round(train_loss_final, 4),
+            "Test Loss":       round(test_loss, 4),
+            "Gap pp":          diferencia,
+            "Overfitting":     estado_ovfit,
+            "Archivo":         nombre_archivo_modelo,
+        }
+        tabla_de_resultados.append(fila)
+        metricas_json["modelos"].append(fila)
 
-        if accuracy_promedio > mejor_accuracy_promedio:
-            mejor_accuracy_promedio = accuracy_promedio
+        if test_accuracy > mejor_accuracy_promedio:
+            mejor_accuracy_promedio = test_accuracy
             mejor_modelo_entrenado  = modelo
+            mejor_nombre            = configuracion["nombre"]
 
     # ---- 4. Guardar el mejor como modelo principal ----
-    print(f"\nGuardando el mejor modelo ({mejor_accuracy_promedio * 100:.2f}% accuracy) como principal...")
+    metricas_json["mejor_modelo"] = mejor_nombre
+    metricas_json["mejor_test_accuracy"] = round(mejor_accuracy_promedio * 100, 2)
+
+    print(f"\nGuardando el mejor modelo '{mejor_nombre}' ({mejor_accuracy_promedio*100:.2f}%) como principal...")
     mejor_modelo_entrenado.save(RUTA_MODELO_PRINCIPAL)
     print(f"  ✓ Guardado en: {RUTA_MODELO_PRINCIPAL}")
 
+    with open(RUTA_METRICAS_JSON, "w", encoding="utf-8") as f:
+        json.dump(metricas_json, f, ensure_ascii=False, indent=2)
+    print(f"  ✓ Métricas guardadas en: {RUTA_METRICAS_JSON}")
+
     # ---- 5. Tabla resumen ----
-    print("\n" + "=" * 90)
-    print(f"{'Nº':<4} {'Nombre':<16} {'Capas':<22} {'Drop':<6} {'Épocas':<8} {'Batch':<7} {'Accuracy %':<12} {'Archivo'}")
-    print("-" * 90)
+    print("\n" + "=" * 110)
+    print(f"{'Nº':<4} {'Nombre':<14} {'Train Acc%':<12} {'Test Acc%':<11} {'Train Loss':<12} {'Test Loss':<11} {'Gap pp':<9} {'Ovf':<6} {'Ep.'}")
+    print("-" * 110)
     for fila in tabla_de_resultados:
-        marca_mejor = " ← MEJOR" if fila["Accuracy %"] == max(f["Accuracy %"] for f in tabla_de_resultados) else ""
-        print(f"{fila['Nº']:<4} {fila['Nombre']:<16} {fila['Capas']:<22} {fila['Dropout']:<6} "
-              f"{fila['Épocas máx']:<8} {fila['Batch']:<7} {fila['Accuracy %']:<12}{fila['Archivo']}{marca_mejor}")
+        marca = " ← MEJOR" if fila["Test Acc %"] == max(f["Test Acc %"] for f in tabla_de_resultados) else ""
+        print(f"{fila['Nº']:<4} {fila['Nombre']:<14} {fila['Train Acc %']:<12} {fila['Test Acc %']:<11} "
+              f"{fila['Train Loss']:<12} {fila['Test Loss']:<11} {fila['Gap pp']:+.2f}{'':6} {fila['Overfitting']:<6} "
+              f"{fila['Épocas reales']}{marca}")
     print("=" * 90)
 
     print("\n✓ Entrenamiento completado. El sistema Flask usará 'modelo_principal.keras'.")

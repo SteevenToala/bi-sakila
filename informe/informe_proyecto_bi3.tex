@@ -1,7 +1,7 @@
 % =============================================================================
-% INFORME TÉCNICO — PROYECTO BI3
-% Universidad Técnica de Ambato
-% Carrera de Software — Inteligencia de Negocios
+% INFORME TÉCNICO
+% Universidad Técnica de Ambato — Carrera de Software
+% Inteligencia de Negocios
 % =============================================================================
 
 \documentclass[12pt, a4paper]{report}
@@ -16,16 +16,29 @@
 \usepackage{microtype}
 
 % --- Márgenes ---
-\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+\usepackage[letterpaper,top=2cm,bottom=5cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 
 % --- Matemáticas ---
 \usepackage{amsmath, amssymb, amsthm}
+\usepackage{stackengine}
 
 % --- Gráficos e imágenes ---
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{caption}
+\usepackage{adjustbox}
 \graphicspath{{imagenes/}}
+
+% --- Extras ---
+\usepackage{fontawesome5}
+\usepackage{multicol}
+
+% --- Listas con espaciado controlado ---
+\usepackage{enumitem}
+\setlist[itemize]{topsep=4pt, itemsep=3pt, parsep=0pt, leftmargin=*}
+\setlist[enumerate]{topsep=4pt, itemsep=3pt, parsep=0pt, leftmargin=*}
+\setlist[description]{topsep=4pt, itemsep=4pt, parsep=0pt, leftmargin=3em, font=\normalfont\itshape}
 
 % --- Tablas ---
 \usepackage{booktabs}
@@ -35,7 +48,7 @@
 \usepackage{xcolor}
 \usepackage{colortbl}
 
-% --- Color y estilo ---
+% --- Colores ---
 \definecolor{uta-azul}{RGB}{0, 32, 96}
 \definecolor{uta-azul-claro}{RGB}{0, 70, 160}
 \definecolor{gris-claro}{RGB}{245, 245, 250}
@@ -47,53 +60,68 @@
   linkcolor=uta-azul,
   citecolor=uta-azul-claro,
   urlcolor=uta-azul-claro,
-  pdftitle={Proyecto BI3 - Red Neuronal Multitarea},
-  pdfauthor={Universidad Técnica de Ambato},
+  pdftitle={Red Neuronal Multitarea - Tienda de Alquileres de Sakila},
+  pdfauthor={Steeven Toala},
   pdfsubject={Inteligencia de Negocios}
 ]{hyperref}
 
-% --- Código fuente ---
-\usepackage{listings}
-\lstset{
-  basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\bfseries\color{uta-azul},
-  commentstyle=\itshape\color{gray},
-  stringstyle=\color{teal},
-  backgroundcolor=\color{gris-claro},
-  frame=single,
-  rulecolor=\color{uta-azul!30},
-  breaklines=true,
-  showstringspaces=false,
-  numbers=left,
-  numberstyle=\tiny\color{gray},
-  numbersep=8pt,
-  xleftmargin=14pt
-}
-
-% --- Encabezados y pies de página ---
+% --- Encabezado institucional ---
 \usepackage{fancyhdr}
+\setlength{\headheight}{70pt}
+
+\newcommand{\encabezadoUTA}{%
+    \begin{minipage}[c]{2.5cm}
+        \centering
+        \includegraphics[width=2.2cm]{uta.png}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[c]{8cm}
+        \centering
+        \small{\textbf{UNIVERSIDAD TÉCNICA DE AMBATO}} \\[0.1cm]
+        \scriptsize\textit{FACULTAD DE INGENIERÍA EN SISTEMAS ELECTRÓNICA E INDUSTRIAL} \\[0.1cm]
+        \scriptsize\textbf{CARRERA DE SOFTWARE} \\[0.1cm]
+        \scriptsize\textbf{CICLO ACADÉMICO: FEBRERO -- JULIO 2026}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[c]{2.5cm}
+        \centering
+        \includegraphics[width=2.2cm]{fisei.png}
+    \end{minipage}%
+}
+\newcommand{\pieUTA}{\small\color{gray}Universidad Técnica de Ambato --- Inteligencia de Negocios \quad|\quad \thepage}
+
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\color{uta-azul}\textit{Proyecto BI3 — Red Neuronal para Toma de Decisiones Comerciales}}
-\fancyhead[R]{\small\color{uta-azul}\thepage}
-\fancyfoot[C]{\small\color{gray}Universidad Técnica de Ambato — Inteligencia de Negocios}
+\fancyhead[C]{\encabezadoUTA}
+\fancyfoot[C]{\pieUTA}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.2pt}
 
-% --- Títulos de capítulos y secciones ---
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[C]{\encabezadoUTA}
+  \fancyfoot[C]{\pieUTA}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.2pt}
+}
+
+% --- Títulos compactos ---
 \usepackage{titlesec}
-\titleformat{\chapter}[display]
-  {\normalfont\bfseries\color{uta-azul}\huge}
-  {\chaptertitlename\ \thechapter}{12pt}{\Huge}
+\titleformat{\chapter}[block]
+  {\normalfont\bfseries\color{uta-azul}\large}
+  {\chaptertitlename\ \thechapter.}{0.6em}{}
+  [\vspace{-4pt}\rule{\textwidth}{0.4pt}\vspace{2pt}]
+\titlespacing*{\chapter}{0pt}{12pt}{10pt}
+
 \titleformat{\section}
-  {\normalfont\bfseries\color{uta-azul-claro}\large}
+  {\normalfont\bfseries\color{uta-azul-claro}\normalsize}
   {\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+
 \titleformat{\subsection}
   {\normalfont\bfseries\color{uta-azul}\normalsize}
   {\thesubsection}{1em}{}
-
-% --- Resumen y abstract en español ---
-\renewcommand{\abstractname}{Resumen}
+\titlespacing*{\subsection}{0pt}{8pt}{2pt}
 
 % --- Comandos de utilidad ---
 \newcommand{\variable}[1]{\texttt{\small #1}}
@@ -104,67 +132,50 @@
 \usepackage{setspace}
 \setstretch{1.15}
 
-% --- Notas al pie ---
-\usepackage{footnote}
-
 % =============================================================================
 \begin{document}
 % =============================================================================
 
 % ─── PORTADA ──────────────────────────────────────────────────────────────────
 \begin{titlepage}
-  \pagecolor{uta-azul}
-  \color{white}
+  \thispagestyle{fancy}
   \centering
-  \vspace*{1.5cm}
+  \vspace*{2cm}
 
-  {\Large\bfseries UNIVERSIDAD TÉCNICA DE AMBATO\\[4pt]}
-  {\normalsize Facultad de Ingeniería en Sistemas, Electrónica e Industrial\\}
-  {\normalsize Carrera de Ingeniería en Software\\}
+  \color{uta-azul}
+  \rule{0.85\textwidth}{1.2pt}\\[8pt]
+  {\large\bfseries Red Neuronal Multitarea para la Predicción del\\[5pt]
+   Comportamiento Comercial en la Tienda de Alquileres de Sakila}\\[8pt]
+  \rule{0.85\textwidth}{1.2pt}
 
-  \vspace{1.8cm}
-  \rule{0.85\textwidth}{0.5pt}
-  \vspace{0.6cm}
-
-  {\Huge\bfseries Proyecto BI3\\[10pt]}
-  {\Large Red Neuronal Artificial para la\\[4pt]
-   Toma de Decisiones Comerciales\\[4pt]
-   en una Videotienda\\}
-
-  \vspace{0.6cm}
-  \rule{0.85\textwidth}{0.5pt}
   \vspace{1.5cm}
-
-  {\large\bfseries Informe Técnico — Análisis Exploratorio de Datos\\
-   y Arquitectura de Aprendizaje Multitarea\\}
+  \color{black}
+  {\normalsize\bfseries Informe Técnico}\\[4pt]
+  {\small Análisis Exploratorio de Datos y Arquitectura de Aprendizaje Multitarea}
 
   \vspace{2cm}
   \begin{tabular}{rl}
-    \textbf{Asignatura:}  & Inteligencia de Negocios \\[4pt]
-    \textbf{Integrante:}  & Steeven Toala \\[4pt]
-    \textbf{Fecha:}       & Junio 2026 \\[4pt]
-    \textbf{Base de datos:} & MongoDB — \texttt{BI\_Final} \\
+    \textbf{Asignatura:}    & Inteligencia de Negocios \\[4pt]
+    \textbf{Integrante:}    & Steeven Toala, Alexis Lopez \\[4pt]
+    \textbf{Fecha:}         & Junio 2026 \\[4pt]
   \end{tabular}
 
   \vfill
-  {\small\itshape Ambato -- Ecuador}
+  {\small\itshape Ambato --- Ecuador}
 \end{titlepage}
-\nopagecolor
-\color{black}
 
 % ─── RESUMEN ──────────────────────────────────────────────────────────────────
 \chapter*{Resumen}
 \addcontentsline{toc}{chapter}{Resumen}
-\thispagestyle{fancy}
 
-El presente informe documenta el diseño, implementación y análisis del \textbf{Proyecto BI3}, cuyo objetivo es construir un modelo de inteligencia artificial capaz de apoyar la toma de decisiones comerciales en una videotienda. La fuente de datos es una base de datos \textbf{MongoDB} (\texttt{BI\_Final}) que registra transacciones históricas de alquiler de películas.
+Este trabajo documenta el diseño e implementación de un sistema de inteligencia de negocios para la tienda de alquileres de Sakila, cuyo núcleo es una red neuronal que predice simultáneamente ocho indicadores del comportamiento de alquiler. Los datos provienen de una base de datos MongoDB con el historial completo de transacciones, lo que permite disponer de información real sobre clientes, películas e ingresos sin necesidad de encuestas ni fuentes externas.
 
-El pipeline completo comprende cinco etapas: (1) extracción de datos desde MongoDB, (2) ingeniería de características y etiquetas con escalado estadístico, (3) análisis exploratorio de datos (EDA) con visualizaciones estadísticas, (4) entrenamiento comparativo de cinco arquitecturas de redes neuronales de aprendizaje multitarea (\ingles{Multi-Task Learning}), y (5) despliegue de una aplicación web interactiva con Flask.
+El sistema se construyó en cinco etapas secuenciales: extracción y limpieza de datos, ingeniería de variables y etiquetas con escalado estadístico, análisis exploratorio, entrenamiento comparativo de cinco arquitecturas de redes neuronales de aprendizaje multitarea, y despliegue de una interfaz web de predicción.
 
-El modelo final predice simultáneamente \textbf{ocho variables objetivo}: cuatro etiquetas binarias (ingreso alto, renta en fin de semana, preferencia de género, renta prolongada) y cuatro etiquetas multiclase de tres categorías (rango de precio, grupo de edad, nivel de fidelidad, popularidad de película). La entrada al modelo comprende 31 características numéricas resultado de escalar y codificar diez variables continuas, dieciséis variables de género cinematográfico (OHE) y cinco de clasificación de edad (OHE).
+El modelo predice de manera simultánea cuatro etiquetas binarias ---ingreso alto, renta en fin de semana, preferencia de género y renta prolongada--- y cuatro etiquetas multiclase de tres categorías cada una ---rango de precio, grupo de edad de la película, nivel de fidelidad del cliente y popularidad del título---. El vector de entrada tiene 32 dimensiones, resultado de escalar diez variables continuas, añadir la codificación numérica del género cinematográfico y aplicar codificación binaria a las variables categóricas.
 
-\vspace{0.5em}
-\noindent\textbf{Palabras clave:} redes neuronales, aprendizaje multitarea, análisis exploratorio, MongoDB, Flask, clasificación binaria, clasificación multiclase.
+\vspace{0.4em}
+\noindent\textbf{Palabras clave:} redes neuronales, aprendizaje multitarea, análisis exploratorio, MongoDB, clasificación binaria, clasificación multiclase.
 
 % ─── ÍNDICE ───────────────────────────────────────────────────────────────────
 \tableofcontents
@@ -175,13 +186,12 @@ El modelo final predice simultáneamente \textbf{ocho variables objetivo}: cuatr
 % =============================================================================
 \chapter{Introducción}
 % =============================================================================
-\thispagestyle{fancy}
 
 \section{Contexto y motivación}
 
-Las videotiendas generan volúmenes significativos de datos de transacción que, en su forma cruda, aportan escaso valor estratégico. La inteligencia de negocios permite transformar esos registros en información accionable: anticipar el comportamiento de alquiler, segmentar a los clientes, optimizar el catálogo y diseñar campañas de fidelización dirigidas.
+La tienda de alquileres de Sakila acumula, con cada transacción de alquiler, una cantidad creciente de información sobre sus clientes, sus películas y sus patrones de consumo. Ese volumen de registros, sin embargo, no se traduce de forma directa en ventaja competitiva: en su estado crudo indica qué ocurrió, pero no permite anticipar qué ocurrirá ni tomar decisiones orientadas al negocio. Saber si un cliente tenderá a alquilar en fin de semana, qué nivel de fidelidad ha alcanzado o qué tan popular es un título en determinado segmento son preguntas que la gestión cotidiana necesita responder con agilidad.
 
-El presente proyecto aplica técnicas de \ingles{machine learning} supervisado —concretamente redes neuronales profundas con múltiples salidas— para predecir de forma simultánea varias características del comportamiento de alquiler a partir de un único vector de entrada. Este enfoque, denominado \ingles{Multi-Task Learning} (MTL), comparte representaciones internas entre tareas relacionadas, lo que puede mejorar la generalización respecto a modelos independientes por tarea.
+La inteligencia de negocios ofrece herramientas para transformar esos registros en información accionable. En particular, el aprendizaje automático supervisado ---concretamente las redes neuronales profundas--- permite encontrar patrones complejos y no lineales en los datos que serían invisibles para un análisis estadístico convencional. El enfoque adoptado en este proyecto es el \ingles{Multi-Task Learning} (MTL): un único modelo aprende a resolver varias tareas de predicción al mismo tiempo, compartiendo las representaciones internas que construye durante el entrenamiento. Esto es ventajoso cuando las tareas están relacionadas entre sí, como ocurre en este caso, donde el comportamiento de alquiler de un cliente está influido simultáneamente por su perfil de consumo, el tipo de película y el contexto temporal de la transacción.
 
 \section{Objetivos}
 
@@ -189,199 +199,200 @@ El presente proyecto aplica técnicas de \ingles{machine learning} supervisado �
   \item \textbf{Objetivo general:} Construir un sistema de inteligencia de negocios basado en una red neuronal multitarea que prediga simultáneamente ocho indicadores comerciales de alquiler de películas.
   \item \textbf{Objetivos específicos:}
   \begin{enumerate}
-    \item Extraer y limpiar datos desde MongoDB hacia un dataset tabular analizable.
-    \item Realizar un análisis exploratorio exhaustivo para caracterizar la distribución y las relaciones entre variables.
+    \item Extraer y estructurar los datos históricos de alquiler en un dataset tabular analizable.
+    \item Realizar un análisis exploratorio para caracterizar la distribución estadística y las relaciones entre variables.
     \item Diseñar y comparar cinco arquitecturas de redes neuronales, seleccionando la de mayor precisión promedio.
-    \item Desplegar una interfaz web que permita obtener predicciones en tiempo real.
+    \item Desplegar una interfaz web que permita obtener predicciones a partir de los datos de una nueva transacción.
   \end{enumerate}
 \end{itemize}
 
 \section{Alcance}
 
-El sistema opera sobre datos históricos de la base \texttt{BI\_Final} almacenada en MongoDB. No incluye reentrenamiento en línea ni actualización automática del modelo. La aplicación web cubre el flujo de predicción individual para una transacción de alquiler dada.
-
-\section{Estructura del documento}
-
-El informe está organizado en seis capítulos: extracción de datos (Capítulo~\ref{cap:datos}), construcción del dataset (Capítulo~\ref{cap:dataset}), análisis exploratorio (Capítulo~\ref{cap:eda}), red neuronal (Capítulo~\ref{cap:red}), aplicación web (Capítulo~\ref{cap:app}) y conclusiones (Capítulo~\ref{cap:conclusiones}).
+El sistema opera sobre el historial almacenado en MongoDB y no contempla reentrenamiento automático ante nuevos datos. La interfaz web cubre el flujo de predicción para una transacción individual.
 
 % =============================================================================
-\chapter{Extracción de Datos desde MongoDB}
+\chapter{Extracción de Datos}
 \label{cap:datos}
 % =============================================================================
-\thispagestyle{fancy}
 
-\section{Base de datos fuente}
+\section{Fuente de datos}
 
-La fuente primaria de información es la base de datos NoSQL \textbf{MongoDB}, instancia local en \texttt{localhost:27017}, base \texttt{BI\_Final}, colección \texttt{alquileres}. Cada documento de la colección representa una transacción de alquiler y contiene las dimensiones descritas en la Tabla~\ref{tab:campos-mongo}.
+La fuente primaria es la base de datos NoSQL \textbf{MongoDB}, instancia local en \texttt{localhost:27017}, base \texttt{BI\_Final}, colección \texttt{alquileres}. Se optó por MongoDB porque el esquema de la tienda es heterogéneo: los actores de cada película se almacenan como una lista de longitud variable dentro del mismo documento, lo cual es natural en un modelo de documentos y habría requerido tablas de asociación adicionales en un motor relacional. Cada documento representa una transacción de alquiler con los campos descritos en la Tabla~\ref{tab:campos-mongo}.
 
 \begin{table}[H]
 \centering
-\caption{Campos extraídos desde la colección \texttt{alquileres} de MongoDB}
+\caption{Campos disponibles en la colección \texttt{alquileres}}
 \label{tab:campos-mongo}
 \rowcolors{2}{gris-claro}{white}
-\begin{tabular}{@{} l l p{6.5cm} @{}}
+\begin{tabular}{@{} l l p{6cm} @{}}
 \toprule
 \textbf{Campo} & \textbf{Tipo} & \textbf{Descripción} \\
 \midrule
-\variable{cliente\_ref}          & ObjectId  & Referencia al documento del cliente \\
-\variable{pelicula\_ref}         & ObjectId  & Referencia al documento de la película \\
-\variable{pelicula\_titulo}      & string    & Título de la película alquilada \\
-\variable{categoria\_nombre}     & string    & Género cinematográfico (16 categorías) \\
-\variable{ingreso}               & decimal   & Monto cobrado por la transacción (\$) \\
-\variable{tiempo\_fecha}         & datetime  & Fecha y hora del alquiler \\
-\variable{pelicula\_duracion}    & integer   & Duración en minutos \\
-\variable{pelicula\_precio\_renta}& decimal  & Tarifa de renta (\$) \\
-\variable{pelicula\_clasificacion}& string   & Clasificación de edad (G, PG, PG-13, R, NC-17) \\
-\variable{duracion\_alquiler}    & integer   & Días que el cliente tuvo la película \\
-\variable{pelicula\_costo\_reposicion}& decimal & Costo de reposición del título (\$) \\
-\variable{pelicula\_actores}     & array     & Lista de nombres del elenco principal \\
-\variable{pelicula\_cantidad\_actores}& integer& Número de actores en el elenco \\
+\variable{cliente\_ref}               & ObjectId & Identificador del cliente \\
+\variable{pelicula\_ref}              & ObjectId & Identificador de la película \\
+\variable{pelicula\_titulo}           & string   & Título de la película \\
+\variable{categoria\_nombre}          & string   & Género cinematográfico (16 categorías) \\
+\variable{ingreso}                    & decimal  & Monto cobrado (\$) \\
+\variable{tiempo\_fecha}              & datetime & Fecha y hora del alquiler \\
+\variable{pelicula\_duracion}         & integer  & Duración en minutos \\
+\variable{pelicula\_precio\_renta}    & decimal  & Tarifa de renta (\$) \\
+\variable{pelicula\_clasificacion}    & string   & Clasificación de edad (G, PG, PG-13, R, NC-17) \\
+\variable{duracion\_alquiler}         & integer  & Días de posesión por el cliente \\
+\variable{pelicula\_costo\_reposicion}& decimal  & Costo de reposición (\$) \\
+\variable{pelicula\_actores}          & array    & Lista de nombres del elenco \\
+\variable{pelicula\_cantidad\_actores}& integer  & Número de actores en el elenco \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Proceso de extracción}
+\section{Extracción y limpieza}
 
-El módulo \texttt{paso\_1\_extraccion/conexion\_mongodb.py} se encarga de:
-\begin{enumerate}
-  \item Conectarse a MongoDB mediante \texttt{pymongo.MongoClient}.
-  \item Proyectar todos los campos de interés en una sola consulta sin múltiples \texttt{JOIN}.
-  \item Normalizar valores monetarios con distintos formatos (p.~ej., \texttt{"\$4.99"}, \texttt{"4,99"}, \texttt{4.99}) hacia \texttt{float}.
-  \item Tipar la columna \variable{tiempo\_fecha} como \texttt{datetime64} para facilitar la ingeniería temporal.
-  \item Retornar un \texttt{DataFrame} de \textbf{pandas} limpio y tipado.
-\end{enumerate}
+Los datos se recuperan en una única consulta sobre la colección para evitar múltiples viajes a la base de datos. Durante la lectura se detectó que el campo \variable{ingreso} y \variable{pelicula\_precio\_renta} presentaban formatos heterogéneos según el origen del registro: algunos valores venían como cadenas de texto con símbolo de moneda (\texttt{"\$4.99"}), otros con coma decimal de estilo europeo (\texttt{"4,99"}) y otros directamente como número. Para garantizar consistencia se aplicaron reglas de normalización de texto antes de convertir a \texttt{float}. El campo de fecha se tipó explícitamente como \texttt{datetime64} para poder extraer atributos temporales ---día de la semana, hora--- en etapas posteriores sin ambigüedad.
 
-La Figura~\ref{fig:pipeline} muestra la arquitectura completa del pipeline de cinco pasos.
+\section{Pipeline general}
 
-\begin{figure}[H]
+La Tabla~\ref{tab:pipeline} describe las cinco etapas que conforman el sistema completo. Cada etapa produce artefactos (datasets, escaladores, modelo) que son consumidos por la siguiente, lo que hace el flujo reproducible: ejecutar las etapas en orden desde el mismo estado de la base de datos siempre produce los mismos resultados.
+
+\begin{table}[H]
 \centering
-\begin{tikzpicture}[node distance=1.6cm]
-% Nota: requiere \usepackage{tikz} — diagrama textual
-\end{tikzpicture}
-% Si tikz no está disponible, se usa una descripción tabular:
-\rowcolors{1}{uta-azul!10}{white}
-\begin{tabular}{@{} c l p{7cm} @{}}
+\caption{Pipeline de cinco etapas}
+\label{tab:pipeline}
+\rowcolors{2}{gris-claro}{white}
+\begin{tabular}{@{} c p{3.5cm} p{7.5cm} @{}}
 \toprule
-\textbf{Paso} & \textbf{Módulo} & \textbf{Responsabilidad} \\
+\textbf{Etapa} & \textbf{Nombre} & \textbf{Responsabilidad} \\
 \midrule
-1 & \texttt{conexion\_mongodb.py}     & Extracción y tipado desde MongoDB \\
-2 & \texttt{construir\_dataset.py}    & Ingeniería de variables y etiquetas + escalado \\
-3 & \texttt{analisis\_exploratorio.py}& EDA: matrices, histogramas, Q-Q, boxplots, scatter \\
-4 & \texttt{entrenar\_red\_neuronal.py}& Comparación de 5 arquitecturas MTL \\
-5 & \texttt{app.py}                   & Interfaz web Flask de predicción \\
+1 & Extracción              & Conexión a MongoDB, limpieza y tipado del dato crudo \\
+2 & Construcción del dataset & Ingeniería de variables, etiquetas, escalado y OHE \\
+3 & Análisis exploratorio    & Matrices de correlación, histogramas, Q-Q, boxplots \\
+4 & Entrenamiento            & Comparación de cinco arquitecturas, selección del mejor modelo \\
+5 & Aplicación web           & Interfaz de predicción multitarea en tiempo real \\
 \bottomrule
 \end{tabular}
-\caption{Pipeline de cinco pasos del proyecto BI3}
-\label{fig:pipeline}
-\end{figure}
+\end{table}
 
 % =============================================================================
 \chapter{Construcción del Dataset}
 \label{cap:dataset}
 % =============================================================================
-\thispagestyle{fancy}
 
 \section{Ingeniería de características}
 
-A partir del DataFrame crudo de alquileres se derivaron variables calculadas que no están disponibles directamente en la colección pero que aportan información estadística relevante (Tabla~\ref{tab:features}).
+El historial de alquileres contiene información directa sobre cada transacción, pero gran parte del valor predictivo reside en patrones acumulados que no existen como campo individual en la base de datos. Por ese motivo se calcularon cuatro variables derivadas que capturan comportamientos históricos: la popularidad acumulada del título, la frecuencia de alquiler de cada cliente, la diversidad de géneros que ese cliente ha consumido y la notoriedad del elenco de la película. Estas cuatro variables, junto con las seis que se leen directamente de MongoDB, conforman las diez variables predictoras resumidas en la Tabla~\ref{tab:features}.
 
 \begin{table}[H]
 \centering
-\caption{Variables predictoras del dataset (features $\mathbf{x} \in \mathbb{R}^{10}$)}
+\caption{Variables predictoras del dataset ($\mathbf{x} \in \mathbb{R}^{10}$)}
 \label{tab:features}
 \rowcolors{2}{gris-claro}{white}
-\begin{tabular}{@{} l p{5.5cm} c c @{}}
+\begin{tabular}{@{} l p{5cm} c c @{}}
 \toprule
 \textbf{Variable} & \textbf{Descripción} & \textbf{Origen} & \textbf{Escalado} \\
 \midrule
-\variable{ingreso}                   & Monto de la transacción            & MongoDB    & Z-score \\
-\variable{veces\_alquilada\_pelicula}& Popularidad histórica del título   & Calculada  & Z-score \\
-\variable{alquileres\_por\_cliente}  & Frecuencia total del cliente       & Calculada  & Z-score \\
-\variable{duracion\_alquiler}        & Días de posesión                   & MongoDB    & Z-score \\
-\variable{pelicula\_costo\_reposicion}& Precio de reposición (\$)         & MongoDB    & Z-score \\
-\variable{pelicula\_duracion}        & Duración en minutos                & MongoDB    & Min-Max \\
-\variable{pelicula\_precio\_renta}   & Tarifa de renta (\$)               & MongoDB    & Min-Max \\
-\variable{variedad\_generos\_cliente}& Géneros distintos consumidos       & Calculada  & Min-Max \\
-\variable{pelicula\_cantidad\_actores}& Tamaño del elenco                 & MongoDB    & Min-Max \\
-\variable{pelicula\_popularidad\_actores}& Popularidad promedio del elenco & Calculada  & Min-Max \\
+\variable{ingreso}                       & Monto de la transacción          & Directo   & Z-score \\
+\variable{veces\_alquilada\_pelicula}    & Popularidad histórica del título  & Calculada & Z-score \\
+\variable{alquileres\_por\_cliente}      & Frecuencia total del cliente      & Calculada & Z-score \\
+\variable{duracion\_alquiler}            & Días de posesión                  & Directo   & Z-score \\
+\variable{pelicula\_costo\_reposicion}   & Precio de reposición (\$)         & Directo   & Z-score \\
+\variable{pelicula\_duracion}            & Duración en minutos               & Directo   & Min-Max \\
+\variable{pelicula\_precio\_renta}       & Tarifa de renta (\$)              & Directo   & Min-Max \\
+\variable{variedad\_generos\_cliente}    & Géneros distintos consumidos      & Calculada & Min-Max \\
+\variable{pelicula\_cantidad\_actores}   & Tamaño del elenco                 & Directo   & Min-Max \\
+\variable{pelicula\_popularidad\_actores}& Popularidad promedio del elenco   & Calculada & Min-Max \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Cálculo de variables derivadas}
+\subsection{Cálculo de las variables derivadas}
 
-\begin{description}
-  \item[\variable{veces\_alquilada\_pelicula}:] Conteo de frecuencia del identificador de película en todo el dataset. Mide la popularidad absoluta del título.
+La variable \variable{veces\_alquilada\_pelicula} se obtiene contando cuántas filas del dataset comparten el mismo identificador de película. Es una medida de popularidad absoluta: un título que aparece más veces en el historial ha sido solicitado por más clientes o con más frecuencia, lo que lo distingue de títulos de nicho. De manera análoga, \variable{alquileres\_por\_cliente} cuenta las filas que comparten el mismo identificador de cliente, reflejando qué tan activo es ese cliente en Sakila. Ambas variables se calculan sobre el dataset completo de una sola pasada, sin necesidad de consultas adicionales a la base de datos.
 
-  \item[\variable{alquileres\_por\_cliente}:] Número total de transacciones registradas para cada \texttt{cliente\_ref}. Sirve como proxy del nivel de fidelidad.
+La variable \variable{variedad\_generos\_cliente} mide cuántos géneros cinematográficos distintos ha consumido cada cliente a lo largo de todo su historial. Un valor alto indica preferencias amplias, mientras que un valor bajo sugiere que el cliente se concentra en un tipo específico de contenido. Esta distinción es relevante para la etiqueta \variable{cliente\_prefiere\_genero}: un cliente con poca variedad probablemente tenga una preferencia clara y consistente.
 
-  \item[\variable{variedad\_generos\_cliente}:] Número de géneros cinematográficos distintos que el cliente ha consumido, calculado con \texttt{groupby(\allowbreak"cliente\_ref")["categoria\_nombre"].transform("nunique")}.
+Para \variable{pelicula\_popularidad\_actores}, primero se contabiliza cuántas veces aparece cada actor en el dataset total ---lo que aproxima su exposición en el catálogo--- y luego, para cada película, se promedia esa popularidad sobre todos los actores de su elenco. El resultado es un indicador de si la película cuenta con actores ampliamente representados en el catálogo o con actores de apariciones más esporádicas.
 
-  \item[\variable{pelicula\_popularidad\_actores}:] Primero se contabiliza cuántas veces aparece cada actor en el dataset completo (frecuencia absoluta). Luego, para cada película, se promedia la popularidad de todos los actores de su elenco.
-\end{description}
+\section{Definición de etiquetas objetivo}
 
-\section{Ingeniería de etiquetas objetivo}
-
-El sistema predice ocho variables objetivo que capturan distintos aspectos del comportamiento comercial. La Tabla~\ref{tab:etiquetas} resume su definición formal.
+Las ocho etiquetas objetivo fueron diseñadas para responder preguntas concretas del negocio. Cuatro de ellas son binarias ---¿fue alto el ingreso?, ¿ocurrió en fin de semana?, ¿el cliente tiene afinidad por este género?, ¿fue una renta prolongada?--- y cuatro son multiclase de tres categorías cada una. La Tabla~\ref{tab:etiquetas} presenta sus criterios de asignación.
 
 \begin{table}[H]
 \centering
-\caption{Etiquetas objetivo (variables $\mathbf{y}$)}
+\caption{Etiquetas objetivo y criterio de asignación}
 \label{tab:etiquetas}
 \rowcolors{2}{gris-claro}{white}
-\begin{tabular}{@{} l c p{7.5cm} @{}}
+\begin{tabular}{@{} l c p{7cm} @{}}
 \toprule
-\textbf{Etiqueta} & \textbf{Tipo} & \textbf{Definición} \\
+\textbf{Etiqueta} & \textbf{Tipo} & \textbf{Criterio} \\
 \midrule
-\variable{es\_ingreso\_alto}        & Binaria & 1 si el ingreso $\geq$ percentil 75 dentro de su género cinematográfico \\
-\variable{renta\_fin\_de\_semana}   & Binaria & 1 si la transacción ocurrió en viernes (día 4), sábado o domingo \\
-\variable{cliente\_prefiere\_genero}& Binaria & 1 si el cliente rentó este género más que su promedio personal de consumo \\
-\variable{renta\_larga}             & Binaria & 1 si los días de posesión superan la mediana global del dataset \\
+\variable{es\_ingreso\_alto}         & Binaria    & 1 si ingreso $\geq$ percentil 75 dentro de su género \\
+\variable{renta\_fin\_de\_semana}    & Binaria    & 1 si la transacción ocurrió en viernes, sábado o domingo \\
+\variable{cliente\_prefiere\_genero} & Binaria    & 1 si el cliente alquiló este género más que su promedio personal \\
+\variable{renta\_larga}              & Binaria    & 1 si los días de posesión superan la mediana global \\
 \midrule
-\variable{rango\_precio\_renta}     & Multiclase & 0=Económico ($\leq\$1.00$), 1=Estándar (\$1.00–\$3.00), 2=Premium ($>\$3.00$) \\
-\variable{grupo\_edad\_pelicula}    & Multiclase & 0=Infantil (G,PG), 1=Adolescentes (PG-13), 2=Adultos (R,NC-17) \\
-\variable{nivel\_fidelidad\_cliente}& Multiclase & 0=Bronce (1–20), 1=Plata (21–30), 2=Oro ($>$30 alquileres) \\
-\variable{popularidad\_pelicula}    & Multiclase & 0=Baja (1–12), 1=Media (13–22), 2=Alta ($>$22 rentas del título) \\
+\variable{rango\_precio\_renta}      & Multiclase & 0~=~Económico ($\leq\$1.00$), 1~=~Estándar, 2~=~Premium ($>\$3.00$) \\
+\variable{grupo\_edad\_pelicula}     & Multiclase & 0~=~Infantil (G,PG), 1~=~Adolescentes (PG-13), 2~=~Adultos (R,NC-17) \\
+\variable{nivel\_fidelidad\_cliente} & Multiclase & 0~=~Bronce (1--20), 1~=~Plata (21--30), 2~=~Oro ($>$30 alquileres) \\
+\variable{popularidad\_pelicula}     & Multiclase & 0~=~Baja (1--12), 1~=~Media (13--22), 2~=~Alta ($>$22 rentas) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Escalado y codificación}
+Para \variable{es\_ingreso\_alto} se usó el percentil 75 calculado dentro de cada género cinematográfico en lugar de un umbral global, porque los distintos géneros tienen estructuras de precio inherentemente diferentes. Comparar un ingreso de Drama contra el percentil de Drama ---y no contra toda la base--- garantiza que la etiqueta detecte ingresos altos en términos relativos al contexto del género. El percentil 75 se eligió sobre el 50 o el 90 buscando que la clase positiva represente aproximadamente el cuarto superior de la distribución, suficientemente exigente para ser relevante pero sin producir una clase positiva demasiado escasa.
 
-El pipeline de preparación aplica dos estrategias de escalado y una de codificación:
+La etiqueta \variable{renta\_larga} utiliza la mediana global como umbral en lugar de la media, porque la distribución de días de posesión tiende a tener una cola derecha larga (algunos clientes retienen las películas muchos más días de lo habitual). La mediana es resistente a esos valores extremos y al mismo tiempo garantiza clases aproximadamente balanceadas en el conjunto de entrenamiento, lo cual favorece la convergencia del modelo.
 
-\begin{enumerate}
-  \item \textbf{Estandarización Z-score} (media 0, desviación estándar 1) para las cinco variables con distribuciones libres o con valores extremos: \variable{ingreso}, \variable{veces\_alquilada\_pelicula}, \variable{alquileres\_por\_cliente}, \variable{duracion\_alquiler} y \variable{pelicula\_costo\_reposicion}:
-  \[
-    x'_i = \frac{x_i - \mu}{\sigma}
-  \]
+Los umbrales de \variable{nivel\_fidelidad\_cliente} ---Bronce hasta 20 alquileres, Plata hasta 30, Oro por encima--- y de \variable{popularidad\_pelicula} ---Baja hasta 12 rentas, Media hasta 22, Alta por encima--- se definieron analizando la distribución acumulada de cada variable para que las tres clases resulten razonablemente balanceadas. Un desequilibrio severo entre clases haría que el modelo aprendiera a predecir siempre la clase mayoritaria, obteniendo alta precisión aparente pero nula utilidad práctica.
 
-  \item \textbf{Normalización Min-Max} al intervalo $[0,1]$ para las cinco variables con rango conocido y sin valores extremos significativos:
-  \[
-    x'_i = \frac{x_i - x_{\min}}{x_{\max} - x_{\min}}
-  \]
+\section{Escalado de variables numéricas}
 
-  \item \textbf{One-Hot Encoding (OHE)} para las columnas categóricas nominales:
-  \begin{itemize}
-    \item \variable{categoria\_nombre}: 16 géneros cinematográficos $\rightarrow$ 16 columnas binarias.
-    \item \variable{pelicula\_clasificacion}: 5 niveles de clasificación de edad $\rightarrow$ 5 columnas binarias.
-  \end{itemize}
-\end{enumerate}
+Antes de ingresar a la red neuronal, todas las variables continuas se transforman a una escala comparable. Sin este paso, variables con rangos muy amplios ---como el número total de alquileres de un cliente--- dominarían el cálculo del gradiente durante el entrenamiento, dificultando que el modelo aprenda el aporte de las variables de rango pequeño.
 
-El vector de entrada final a la red neuronal tiene dimensión $\mathbf{x} \in \mathbb{R}^{31}$ (10 continuas escaladas + 16 géneros OHE + 5 clasificaciones OHE).
+Se aplicaron dos estrategias distintas según las características de cada variable. La \textbf{estandarización Z-score} transforma la variable para que tenga media cero y desviación estándar uno:
+
+\[
+  x'_i = \frac{x_i - \mu}{\sigma}
+\]
+
+\begin{itemize}
+  \item $x_i$: valor original de la observación
+  \item $\mu$: media aritmética de la variable en el dataset de entrenamiento
+  \item $\sigma$: desviación estándar de la variable en el dataset de entrenamiento
+  \item $x'_i$: valor transformado, con media 0 y desviación estándar 1
+\end{itemize}
+
+Esta transformación es adecuada cuando la variable no tiene un rango máximo conocido de antemano y puede presentar valores extremos, como ocurre con \variable{ingreso}, \variable{veces\_alquilada\_pelicula}, \variable{alquileres\_por\_cliente}, \variable{duracion\_alquiler} y \variable{pelicula\_costo\_reposicion}: en Sakila, un cliente excepcionalmente activo o una película especialmente popular pueden tener valores muy alejados del promedio, y el Z-score los acomoda sin fijar un techo artificial.
+
+La \textbf{normalización Min-Max} comprime la variable al intervalo $[0, 1]$:
+
+\[
+  x'_i = \frac{x_i - x_{\min}}{x_{\max} - x_{\min}}
+\]
+
+\begin{itemize}
+  \item $x_i$: valor original de la observación
+  \item $x_{\min}$: valor mínimo observado para esa variable en el dataset
+  \item $x_{\max}$: valor máximo observado para esa variable en el dataset
+  \item $x'_i$: valor transformado, en el intervalo $[0, 1]$
+\end{itemize}
+
+Se aplicó a \variable{pelicula\_duracion}, \variable{pelicula\_precio\_renta}, \variable{variedad\_generos\_cliente}, \variable{pelicula\_cantidad\_actores} y \variable{pelicula\_popularidad\_actores} porque estas variables tienen rangos conocidos y acotados: la duración de una película tiene límites físicos razonables, la tarifa de renta varía dentro de una banda de precios definida por Sakila y el número de géneros distintos que un cliente puede consumir no puede superar el total de géneros del catálogo. En estos casos, fijar el rango a $[0, 1]$ es conceptualmente correcto y no genera distorsión.
+
+\section{Codificación de variables categóricas}
+
+Las dos variables categóricas nominales del dataset ---\variable{categoria\_nombre} (género cinematográfico) y \variable{pelicula\_clasificacion} (clasificación de edad)--- no admiten una codificación numérica ordinal, porque sus categorías no tienen un orden intrínseco. Asignarles valores 0, 1, 2, \ldots\ induciría al modelo a interpretar que una categoría es ``mayor'' que otra, lo cual carece de sentido en este dominio. Por ese motivo se aplicó \textbf{One-Hot Encoding} (OHE): cada categoría se convierte en una columna binaria independiente, de modo que la presencia de la categoría se indica con un 1 y su ausencia con un 0, sin implicar ningún orden entre ellas.
+
+Los 16 géneros cinematográficos producen 16 columnas binarias y los 5 niveles de clasificación de edad producen 5 columnas adicionales. Sumadas a las 10 variables continuas escaladas y a la variable \variable{id\_genero} ---codificación numérica ordinal del género obtenida con \texttt{LabelEncoder}---, el vector de entrada final tiene dimensión $\mathbf{x} \in \mathbb{R}^{32}$.
 
 % =============================================================================
 \chapter{Análisis Exploratorio de Datos}
 \label{cap:eda}
 % =============================================================================
-\thispagestyle{fancy}
 
-El EDA se implementa en \texttt{paso\_3\_eda/analisis\_exploratorio.py} y genera cinco tipos de visualización organizados en subcarpetas temáticas. A continuación se presentan los resultados más relevantes.
+El análisis exploratorio se realizó sobre el dataset base, antes de aplicar el escalado, para que los valores reflejen las magnitudes originales y sean interpretables. Se generaron cinco tipos de visualización: matrices de covarianza y correlación, histogramas de distribución, gráficos Q-Q de normalidad, diagramas de caja por etiqueta y gráficos de dispersión bivariados. El objetivo fue verificar que los datos son coherentes, detectar posibles anomalías y reunir evidencia estadística que respalde las decisiones de preprocesamiento tomadas en el capítulo anterior.
 
-% ─── 4.1 Matrices ──────────────────────────────────────────────────────────────
 \section{Matrices de correlación y covarianza}
 
-Las matrices de correlación de Pearson y de covarianza permiten detectar dependencias lineales entre las variables predictoras y entre las etiquetas objetivo.
+Las matrices de covarianza y correlación de Pearson permiten detectar dependencias lineales entre pares de variables. La covarianza mide la variación conjunta en unidades absolutas, mientras que la correlación la normaliza al intervalo $[-1, 1]$, lo que facilita comparar la intensidad de la dependencia entre pares con distintas escalas.
 
 \begin{figure}[H]
   \centering
@@ -396,7 +407,7 @@ Las matrices de correlación de Pearson y de covarianza permiten detectar depend
     \caption{Correlación de Pearson entre variables predictoras}
     \label{fig:corr-pred}
   \end{subfigure}
-  \caption{Análisis de dependencias lineales en las variables de entrada}
+  \caption{Dependencias lineales entre las diez variables de entrada}
   \label{fig:matrices-pred}
 \end{figure}
 
@@ -404,25 +415,24 @@ Las matrices de correlación de Pearson y de covarianza permiten detectar depend
   \centering
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{covarianza_todas_etiquetas.png}
-    \caption{Covarianza entre etiquetas objetivo}
+    \caption{Covarianza entre las ocho etiquetas objetivo}
     \label{fig:cov-et}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{correlacion_todas_etiquetas.png}
-    \caption{Correlación de Pearson entre etiquetas objetivo}
+    \caption{Correlación de Pearson entre las ocho etiquetas objetivo}
     \label{fig:corr-et}
   \end{subfigure}
-  \caption{Análisis de dependencias lineales entre las ocho etiquetas objetivo}
+  \caption{Dependencias lineales entre las etiquetas objetivo}
   \label{fig:matrices-et}
 \end{figure}
 
-La correlación entre las etiquetas objetivo (Figura~\ref{fig:corr-et}) es clave para validar la pertinencia del enfoque MTL: si las etiquetas guardan correlación entre sí, la red puede beneficiarse del conocimiento compartido entre tareas.
+La correlación entre las etiquetas (Figura~\ref{fig:corr-et}) es especialmente relevante para validar el enfoque MTL. Si las ocho etiquetas fueran completamente independientes entre sí, no habría ganancia en predecirlas con un modelo compartido respecto a ocho modelos separados. La presencia de correlaciones no nulas entre ellas indica que las tareas comparten información subyacente sobre el comportamiento del cliente y las características de la película, y que el modelo puede aprovechar esa información transversal para mejorar la generalización de cada tarea.
 
-% ─── 4.2 Distribuciones ────────────────────────────────────────────────────────
 \section{Distribuciones univariadas}
 
-Para cada variable predictora se generó un histograma de densidad empírica superpuesto con la curva de densidad gaussiana ajustada por método de máxima verosimilitud. Adicionalmente se reporta el \textbf{p-valor del test de Kolmogorov-Smirnov (KS)} para evaluar la hipótesis nula de normalidad.
+Para cada variable predictora se construyó un histograma de densidad empírica superpuesto con la curva gaussiana ajustada por máxima verosimilitud ---que estima la media y la desviación estándar directamente de los datos--- junto con el p-valor del test de Kolmogorov-Smirnov (KS). Este test contrasta la hipótesis nula de que los datos siguen una distribución normal: un p-valor inferior a 0.05 indica que la distribución observada se aleja significativamente de la campana de Gauss con un 95\,\% de confianza. Las visualizaciones también permiten identificar asimetría, multimodalidad o concentración de valores en puntos discretos, características que influyen en la elección de la estrategia de escalado.
 
 \begin{figure}[H]
   \centering
@@ -475,23 +485,22 @@ Para cada variable predictora se generó un histograma de densidad empírica sup
     \caption{\variable{pelicula\_cantidad\_actores}}
   \end{subfigure}
 
-  \caption{Histogramas de densidad con curva normal ajustada y test KS para las 9 primeras variables predictoras}
+  \caption{Histogramas de densidad con curva normal ajustada y p-valor KS}
   \label{fig:distribuciones}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.38\textwidth]{distribuciones_individuales/dist_pelicula_popularidad_actores.png}
-  \caption{Distribución de \variable{pelicula\_popularidad\_actores} con curva normal ajustada}
+  \caption{Distribución de \variable{pelicula\_popularidad\_actores}}
   \label{fig:dist-popularidad-actores}
 \end{figure}
 
-Un p-valor del test KS inferior a $0.05$ indica que la hipótesis de normalidad se rechaza con 95\% de confianza. Dado que la mayoría de las variables provienen de procesos de conteo o de precios acotados, es esperable que presenten distribuciones no gaussianas.
+Las distribuciones de conteo ---\variable{veces\_alquilada\_pelicula}, \variable{alquileres\_por\_cliente}--- muestran una forma asimétrica a la derecha propia de este tipo de variables: la mayoría de películas y clientes se agrupan en valores bajos, mientras que unos pocos acumulan valores muy altos. Ese comportamiento confirma la elección del Z-score para esas variables, ya que el Min-Max se vería dominado por esos valores extremos y comprimiría el resto de la distribución en un rango muy estrecho. Las variables de precio y duración, en cambio, tienen rangos delimitados por la política comercial de Sakila, lo que hace que el Min-Max sea una transformación natural y sin riesgo de distorsión.
 
-% ─── 4.3 Q-Q Plots ─────────────────────────────────────────────────────────────
 \section{Gráficos Q-Q de normalidad}
 
-Los gráficos Quantile-Quantile comparan los cuantiles empíricos de cada variable con los cuantiles teóricos de una distribución normal estándar. Cuanto mayor sea la desviación respecto a la diagonal, más alejada está la distribución de la normalidad.
+Los gráficos Quantile-Quantile (Q-Q) complementan el test KS con una evaluación visual: comparan los cuantiles empíricos de cada variable con los cuantiles teóricos de la distribución normal. Si los puntos siguen la diagonal, la variable se ajusta bien a la normal; una curvatura sistemática en los extremos indica colas más pesadas o más ligeras de lo que la normal predice. Esta información es valiosa porque la red neuronal no asume ninguna distribución de los datos de entrada, pero el examinador puede identificar si alguna transformación adicional ---como el logaritmo--- podría linealizar la distribución antes del escalado.
 
 \begin{figure}[H]
   \centering
@@ -527,16 +536,15 @@ Los gráficos Quantile-Quantile comparan los cuantiles empíricos de cada variab
     \caption{\variable{pelicula\_popularidad\_actores}}
   \end{subfigure}
 
-  \caption{Gráficos Q-Q de normalidad — selección de seis variables predictoras}
+  \caption{Gráficos Q-Q para seis variables representativas}
   \label{fig:qqplots}
 \end{figure}
 
-Las colas pesadas observadas en variables como \variable{alquileres\_por\_cliente} y \variable{pelicula\_popularidad\_actores} refuerzan la decisión de aplicar estandarización Z-score, que es más robusta ante distribuciones con asimetría que la normalización Min-Max.
+Las colas pesadas visibles en \variable{alquileres\_por\_cliente} y \variable{pelicula\_popularidad\_actores} ---los puntos se despegan notablemente de la diagonal en los extremos--- son consistentes con lo observado en los histogramas y reafirman que estas variables no son normales. Para la red neuronal esto no representa un problema en sí mismo, pero explica por qué el Z-score es más apropiado que el Min-Max: al no fijar un techo artificial, permite que esos valores extremos mantengan su posición relativa en la escala transformada.
 
-% ─── 4.4 Boxplots ──────────────────────────────────────────────────────────────
-\section{Boxplots por etiqueta objetivo}
+\section{Diagramas de caja por etiqueta}
 
-Para cada combinación (etiqueta $\times$ variable predictora) se generó un diagrama de caja que muestra la distribución de la variable dentro de cada clase de la etiqueta. A continuación se presentan los casos más ilustrativos.
+Los diagramas de caja muestran cómo se distribuye cada variable predictora dentro de cada clase de cada etiqueta objetivo. Cuando las cajas de distintas clases se encuentran en posiciones claramente separadas, la variable tiene capacidad discriminante para esa etiqueta y será de utilidad para el modelo. Cuando las cajas se solapan completamente, la variable aporta poco por sí sola, aunque puede contribuir en combinación con otras.
 
 \subsection{Etiqueta: \variable{es\_ingreso\_alto}}
 
@@ -556,7 +564,7 @@ Para cada combinación (etiqueta $\times$ variable predictora) se generó un dia
     \includegraphics[width=\textwidth]{boxplots_individuales/boxplot_es_ingreso_alto_pelicula_costo_reposicion.png}
     \caption{\variable{pelicula\_costo\_reposicion}}
   \end{subfigure}
-  \caption{Distribución de variables clave según \variable{es\_ingreso\_alto} (0=Normal, 1=Alto)}
+  \caption{\variable{es\_ingreso\_alto} por clase (0~=~Normal, 1~=~Alto)}
   \label{fig:box-ingreso-alto}
 \end{figure}
 
@@ -578,7 +586,7 @@ Para cada combinación (etiqueta $\times$ variable predictora) se generó un dia
     \includegraphics[width=\textwidth]{boxplots_individuales/boxplot_renta_fin_de_semana_veces_alquilada_pelicula.png}
     \caption{\variable{veces\_alquilada\_pelicula}}
   \end{subfigure}
-  \caption{Distribución de variables clave según \variable{renta\_fin\_de\_semana} (0=Laborable, 1=Fin de semana)}
+  \caption{\variable{renta\_fin\_de\_semana} por clase (0~=~Laborable, 1~=~Fin de semana)}
   \label{fig:box-fds}
 \end{figure}
 
@@ -600,7 +608,7 @@ Para cada combinación (etiqueta $\times$ variable predictora) se generó un dia
     \includegraphics[width=\textwidth]{boxplots_individuales/boxplot_nivel_fidelidad_cliente_variedad_generos_cliente.png}
     \caption{\variable{variedad\_generos\_cliente}}
   \end{subfigure}
-  \caption{Distribución de variables clave según \variable{nivel\_fidelidad\_cliente} (0=Bronce, 1=Plata, 2=Oro)}
+  \caption{\variable{nivel\_fidelidad\_cliente} por clase (0~=~Bronce, 1~=~Plata, 2~=~Oro)}
   \label{fig:box-fidelidad}
 \end{figure}
 
@@ -622,7 +630,7 @@ Para cada combinación (etiqueta $\times$ variable predictora) se generó un dia
     \includegraphics[width=\textwidth]{boxplots_individuales/boxplot_popularidad_pelicula_pelicula_precio_renta.png}
     \caption{\variable{pelicula\_precio\_renta}}
   \end{subfigure}
-  \caption{Distribución de variables clave según \variable{popularidad\_pelicula} (0=Baja, 1=Media, 2=Alta)}
+  \caption{\variable{popularidad\_pelicula} por clase (0~=~Baja, 1~=~Media, 2~=~Alta)}
   \label{fig:box-popularidad}
 \end{figure}
 
@@ -630,230 +638,278 @@ Para cada combinación (etiqueta $\times$ variable predictora) se generó un dia
 \chapter{Arquitectura de la Red Neuronal}
 \label{cap:red}
 % =============================================================================
-\thispagestyle{fancy}
 
-\section{Enfoque: Multi-Task Learning}
+\section{Aprendizaje multitarea}
 
-El aprendizaje multitarea (\ingles{Multi-Task Learning}, MTL) es un paradigma en el que un único modelo aprende a resolver varias tareas de forma simultánea, compartiendo representaciones internas. Esto ofrece dos ventajas principales:
+En el aprendizaje multitarea un único modelo se entrena para resolver varias tareas de forma simultánea. La idea central es que las tareas comparten estructura subyacente: en este caso, todas las etiquetas dependen del mismo cliente, la misma película y el mismo contexto de transacción, por lo que aprender a predecir \variable{nivel\_fidelidad\_cliente} también proporciona señales útiles para predecir \variable{es\_ingreso\_alto} o \variable{renta\_larga}. Al compartir el cuerpo de la red entre tareas, cada tarea actúa como regularizador de las demás: si el modelo aprende a generalizar para una tarea, esa capacidad se transfiere parcialmente a las otras, reduciendo el sobreajuste que podría ocurrir al entrenar modelos independientes con los mismos datos.
 
-\begin{enumerate}
-  \item \textbf{Regularización implícita:} al optimizar múltiples funciones de pérdida a la vez, el gradiente de cada tarea actúa como regularizador para las demás, reduciendo el sobreajuste.
-  \item \textbf{Eficiencia computacional:} una sola pasada hacia adelante (\ingles{forward pass}) produce ocho predicciones simultáneas en lugar de ocho pasadas independientes.
-\end{enumerate}
+La alternativa habitual sería entrenar ocho modelos separados. Esto es factible, pero implica ocho veces el costo de entrenamiento, ocho modelos que gestionar en producción y la pérdida de la información compartida entre tareas. El MTL resuelve los tres problemas con una única arquitectura.
 
-\section{Arquitectura del modelo}
+\section{Descripción de la arquitectura}
 
-La arquitectura sigue el patrón \emph{cuerpo compartido + cabezas especializadas}:
+La red sigue el patrón \emph{cuerpo compartido + cabezas especializadas}. El cuerpo procesa el vector de entrada y construye una representación interna que captura los patrones comunes a todas las tareas. Desde esa representación se ramifican ocho cabezas independientes, una por etiqueta, que especializan su salida al tipo de predicción requerida.
 
 \subsection{Capa de entrada}
 
-Un vector $\mathbf{x} \in \mathbb{R}^{31}$ que concatena:
-\begin{itemize}
-  \item 10 variables continuas escaladas (Z-score y Min-Max).
-  \item 16 indicadores de género OHE.
-  \item 5 indicadores de clasificación de edad OHE.
-\end{itemize}
+El vector $\mathbf{x} \in \mathbb{R}^{32}$ que concatena las 10 variables continuas escaladas, la variable \variable{id\_genero} (codificación ordinal del género), los 16 indicadores de género OHE y los 5 de clasificación de edad OHE se introduce en una capa de entrada sin transformación adicional. Todas las variables ya están en escalas comparables gracias al preprocesamiento del capítulo anterior, por lo que la red puede asignar pesos a cada dimensión sin que unas dominen a otras por simple diferencia de magnitud.
 
 \subsection{Cuerpo compartido}
 
-$N$ bloques apilados secuencialmente, donde cada bloque consiste en:
+Cada bloque oculto aplica la siguiente transformación en secuencia:
+
 \[
   h^{(\ell)} = \text{Dropout}_p\!\Bigl(\text{BN}\!\bigl(\text{ReLU}(W^{(\ell)} h^{(\ell-1)} + b^{(\ell)})\bigr)\Bigr)
 \]
 
-con $\text{BN}$ = Normalización por lotes (\ingles{Batch Normalization}), $p$ = tasa de \ingles{dropout} y $W^{(\ell)}, b^{(\ell)}$ los parámetros aprendidos de la capa $\ell$.
+\begin{itemize}
+  \item $h^{(\ell-1)}$: salida del bloque anterior, o el vector de entrada $\mathbf{x}$ para el primer bloque
+  \item $W^{(\ell)}$: matriz de pesos entrenables de la capa $\ell$
+  \item $b^{(\ell)}$: vector de sesgos entrenables de la capa $\ell$
+  \item $\text{ReLU}(z) = \max(0,z)$: función de activación que introduce no linealidad, permitiendo al modelo aprender relaciones más complejas que las lineales
+  \item $\text{BN}$: normalización por lotes (\textit{Batch Normalization}), que estandariza la activación dentro de cada mini-lote para acelerar la convergencia y reducir la sensibilidad a la inicialización de pesos
+  \item $\text{Dropout}_p$: capa que desactiva aleatoriamente una fracción $p$ de neuronas en cada pasada de entrenamiento para prevenir el sobreajuste
+  \item $h^{(\ell)}$: activación resultante del bloque $\ell$, que sirve de entrada al bloque siguiente
+\end{itemize}
 
 \subsection{Cabezas de salida}
 
-Desde la última representación compartida $h^{(N)}$ se ramifican ocho cabezas independientes:
+Las cuatro etiquetas binarias producen una salida escalar mediante:
 
-\begin{description}
-  \item[4 salidas binarias] $\hat{y}_k = \sigma(w_k^\top h^{(N)} + b_k)$, donde $\sigma$ es la sigmoide. Función de pérdida: \ingles{binary cross-entropy}.
-  \item[4 salidas multiclase (3 clases)] $\hat{\mathbf{y}}_k = \text{softmax}(W_k h^{(N)} + \mathbf{b}_k)$. Función de pérdida: \ingles{sparse categorical cross-entropy}.
-\end{description}
+\[
+  \hat{y}_k = \sigma\!\bigl(w_k^\top h^{(N)} + b_k\bigr)
+\]
 
-La función de pérdida total es la suma de las ocho pérdidas individuales:
+\begin{itemize}
+  \item $h^{(N)}$: salida del último bloque compartido, representación interna aprendida por el cuerpo de la red
+  \item $w_k$: vector de pesos propios de la cabeza de salida $k$
+  \item $b_k$: sesgo propio de la cabeza de salida $k$
+  \item $\sigma(z) = \tfrac{1}{1+e^{-z}}$: función sigmoide, que mapea cualquier valor real al intervalo $(0,1)$ e interpreta la salida como una probabilidad
+  \item $\hat{y}_k$: probabilidad predicha de que la transacción pertenezca a la clase positiva de la etiqueta $k$
+\end{itemize}
+
+El umbral de decisión es 0.5: valores superiores se asignan a la clase positiva. La función de pérdida asociada es la \ingles{binary cross-entropy}, que penaliza en mayor medida las predicciones de alta confianza que resultan incorrectas.
+
+Las cuatro etiquetas multiclase producen un vector de probabilidades de tres componentes mediante:
+
+\[
+  \hat{\mathbf{y}}_k = \text{softmax}(W_k h^{(N)} + \mathbf{b}_k), \quad \text{softmax}(\mathbf{z})_j = \frac{e^{z_j}}{\sum_{i} e^{z_i}}
+\]
+
+\begin{itemize}
+  \item $W_k$: matriz de pesos de la cabeza multiclase $k$, con tres filas (una por clase)
+  \item $\mathbf{b}_k$: vector de sesgos de la cabeza multiclase $k$, con tres componentes
+  \item $\text{softmax}(\mathbf{z})_j = e^{z_j}/\sum_i e^{z_i}$: normaliza el vector de logits para que cada componente quede en $(0,1)$ y la suma sea exactamente 1
+  \item $\hat{\mathbf{y}}_k$: vector de tres probabilidades, una por clase; la clase predicha es la de mayor probabilidad
+\end{itemize}
+
+La función de pérdida utilizada es la \ingles{sparse categorical cross-entropy}, que acepta la etiqueta como un entero (0, 1 o 2) en lugar de requerir que se codifique previamente como vector de tres componentes.
+
+La pérdida total que el optimizador minimiza es la suma de las ocho pérdidas individuales:
+
 \[
   \mathcal{L}_{\text{total}} = \sum_{k=1}^{4} \mathcal{L}_{\text{BCE}}^{(k)} + \sum_{k=5}^{8} \mathcal{L}_{\text{SCE}}^{(k)}
 \]
 
-El optimizador utilizado es \textbf{Adam} con sus hiperparámetros por defecto ($\alpha = 10^{-3}$, $\beta_1 = 0.9$, $\beta_2 = 0.999$).
+\begin{itemize}
+  \item $\mathcal{L}_{\text{BCE}}^{(k)}$: pérdida de entropía cruzada binaria (\textit{binary cross-entropy}) de la $k$-ésima salida binaria ($k = 1,\ldots,4$)
+  \item $\mathcal{L}_{\text{SCE}}^{(k)}$: pérdida de entropía cruzada categórica (\textit{sparse categorical cross-entropy}) de la $k$-ésima salida multiclase ($k = 5,\ldots,8$)
+  \item $\mathcal{L}_{\text{total}}$: pérdida global que el optimizador minimiza en cada actualización de pesos
+\end{itemize}
+
+Sumar las pérdidas sin pesos es la elección más simple: asigna la misma importancia a todas las tareas durante la optimización. El optimizador utilizado es \textbf{Adam}, que adapta la tasa de aprendizaje individualmente para cada parámetro en función del historial de gradientes, con hiperparámetros por defecto ($\alpha = 10^{-3}$, $\beta_1 = 0.9$, $\beta_2 = 0.999$).
 
 \section{Las cinco arquitecturas evaluadas}
 
-Se diseñaron y entrenaron cinco variantes con distintas profundidades, anchos y tasas de regularización. La Tabla~\ref{tab:arquitecturas} resume sus configuraciones.
+En lugar de elegir una única arquitectura por intuición, se diseñaron cinco variantes que exploran de forma sistemática los principales hiperparámetros estructurales de una red neuronal: número de capas, neuronas por capa, tasa de dropout, batch size y número máximo de épocas. Todas las variantes comparten el mismo optimizador Adam ($\alpha=0.001$), la misma función de activación ReLU y la misma inicialización de pesos He uniforme, de modo que los resultados comparativos reflejan el efecto aislado de la estructura de la red.
+
+\subsection{Justificación del diseño experimental}
+
+La selección de estas cinco variantes responde a una estrategia de exploración ortogonal del espacio de hiperparámetros: cada arquitectura prueba una hipótesis distinta sobre qué dimensión de la estructura de la red ---profundidad, ancho, capacidad o tiempo de convergencia--- resulta más determinante para este problema multitarea concreto.
 
 \begin{table}[H]
 \centering
-\caption{Configuración de las cinco arquitecturas de red neuronal evaluadas}
-\label{tab:arquitecturas}
+\caption{Hipótesis que prueba cada arquitectura}
+\label{tab:hipotesis}
 \rowcolors{2}{gris-claro}{white}
-\begin{tabular}{@{} l l c c c c @{}}
+\begin{tabular}{@{} l p{10cm} @{}}
 \toprule
-\textbf{Nombre} & \textbf{Capas densas} & \textbf{Dropout} & \textbf{Épocas máx.} & \textbf{Batch} & \textbf{Descripción} \\
+\textbf{Arquitectura} & \textbf{Hipótesis que responde} \\
 \midrule
-\modelo{Base}          & [128, 64]          & 0.20 & 40 & 64  & Referencia equilibrada \\
-\modelo{Profunda}      & [256, 128, 64, 32] & 0.30 & 50 & 64  & Alta complejidad \\
-\modelo{Ancha}         & [512, 256]         & 0.40 & 40 & 128 & Alta capacidad \\
-\modelo{Rápida}        & [64, 32]           & 0.10 & 30 & 32  & Menos parámetros \\
-\modelo{Conservadora}  & [128, 128, 64]     & 0.25 & 60 & 32  & Aprendizaje estable \\
+\modelo{Base}         & ¿Es suficiente una red de dos capas medianas para aprender las 8 tareas simultáneas con los 16\,044 registros disponibles? Sirve como punto de referencia para evaluar el resto. \\
+\modelo{Profunda}     & ¿Añadir más capas mejora la precisión? Las redes más profundas construyen representaciones jerárquicas; si los patrones del comportamiento de alquiler son complejos y anidados, deberían reflejarse en mayor accuracy. \\
+\modelo{Ancha}        & ¿Es preferible ampliar horizontalmente (más neuronas por capa) en lugar de apilar capas? Redes anchas tienen mayor capacidad por capa, lo que puede ser ventajoso cuando las relaciones relevantes son paralelas, no jerárquicas. \\
+\modelo{Rápida}       & ¿Cuál es el piso de precisión con la mínima capacidad? Una red pequeña actúa como modelo de complejidad mínima: si alcanza resultados similares a los demás, la tarea no requiere muchos parámetros. \\
+\modelo{Conservadora} & ¿Converge mejor un entrenamiento más largo con batch pequeño? Lotes menores producen gradientes más ruidosos pero permiten actualizaciones más frecuentes; más épocas dejan tiempo para que el optimizador escape de mínimos locales. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Protocolo de entrenamiento}
+La combinación de estas cinco variantes cubre el espacio de decisiones más relevante sin requerir una búsqueda exhaustiva: \modelo{Base} y \modelo{Rápida} delimitan el rango de capacidad (de pequeña a mediana), \modelo{Profunda} y \modelo{Ancha} exploran las dos dimensiones de crecimiento de la red (vertical vs.\ horizontal), y \modelo{Conservadora} prueba un régimen de entrenamiento diferente manteniendo la misma topología intermedia.
+
+\subsection{Descripción de cada arquitectura}
 
 \begin{itemize}
-  \item \textbf{División de datos:} 80\% entrenamiento / 20\% testeo con semilla fija (\texttt{random\_state=42}) para garantizar reproducibilidad. Del 80\% de entrenamiento, el 10\% se reserva como conjunto de validación durante el ajuste.
-  \item \textbf{Parada anticipada:} \ingles{EarlyStopping} con \texttt{patience=5} monitoreando \texttt{val\_loss} y restaurando los pesos del mejor epoch.
-  \item \textbf{Métrica de selección:} precisión promedio (\ingles{accuracy}) sobre las ocho salidas en el conjunto de testeo.
-  \item \textbf{Modelo principal:} la arquitectura con mayor \ingles{accuracy} promedio se guarda como \texttt{modelo\_principal.keras} para su uso en producción.
+  \item \modelo{Base}: referencia equilibrada. Dos capas [128, 64], dropout 0.20, 40 épocas máximas, batch 64. Establece el punto de comparación para las demás arquitecturas.
+  \item \modelo{Profunda}: cuatro capas decrecientes [256, 128, 64, 32], dropout 0.30, 50 épocas, batch 64. Mayor profundidad para capturar jerarquías de abstracción más complejas; el dropout alto compensa la mayor capacidad de memorización.
+  \item \modelo{Ancha}: dos capas muy anchas [512, 256], dropout 0.40, 40 épocas, batch 128. Explora si una mayor capacidad horizontal ---más neuronas por capa en lugar de más capas--- supera a la profundidad.
+  \item \modelo{Rápida}: dos capas pequeñas [64, 32], dropout 0.10, 30 épocas, batch 32. Evalúa si una arquitectura compacta puede alcanzar precisión competitiva con menor costo computacional y menor riesgo de sobreajuste por parámetros reducidos.
+  \item \modelo{Conservadora}: tres capas de ancho uniforme [128, 128, 64], dropout 0.25, 60 épocas máximas, batch 32. El mayor número de épocas permite que el gradiente descendiente explore el espacio de parámetros de forma más gradual, buscando un mínimo más estable.
 \end{itemize}
-
-\section{Tabla comparativa de resultados}
 
 \begin{table}[H]
 \centering
-\caption{Resultados comparativos de las cinco arquitecturas (accuracy en testeo)}
-\label{tab:resultados}
+\caption{Configuración de las cinco arquitecturas evaluadas. Todas usan Adam ($\alpha=0.001$), activación ReLU e inicialización He uniforme.}
+\label{tab:arquitecturas}
 \rowcolors{2}{gris-claro}{white}
-\begin{tabular}{@{} c l l c c c r @{}}
+\begin{tabular}{@{} l l c c c @{}}
 \toprule
-\textbf{Nº} & \textbf{Nombre} & \textbf{Capas} & \textbf{Drop.} & \textbf{Épocas} & \textbf{Batch} & \textbf{Acc. promedio (\%)} \\
+\textbf{Nombre} & \textbf{Capas [neuronas]} & \textbf{Drop.} & \textbf{Ép. máx.} & \textbf{Batch} \\
 \midrule
-1 & \modelo{Base}         & [128, 64]          & 0.20 & 40 & 64  & --- \\
-2 & \modelo{Profunda}     & [256, 128, 64, 32] & 0.30 & 50 & 64  & --- \\
-3 & \modelo{Ancha}        & [512, 256]         & 0.40 & 40 & 128 & --- \\
-4 & \modelo{Rápida}       & [64, 32]           & 0.10 & 30 & 32  & --- \\
-5 & \modelo{Conservadora} & [128, 128, 64]     & 0.25 & 60 & 32  & \textbf{---\,\color{verde-exito}$\leftarrow$ Mejor} \\
+\modelo{Base}         & [128, 64]        & 0.20 & 40 & 64  \\
+\modelo{Profunda}     & [256,128,64,32]  & 0.30 & 50 & 64  \\
+\modelo{Ancha}        & [512, 256]       & 0.40 & 40 & 128 \\
+\modelo{Rápida}       & [64, 32]         & 0.10 & 30 & 32  \\
+\modelo{Conservadora} & [128, 128, 64]   & 0.25 & 60 & 32  \\
 \bottomrule
-\multicolumn{7}{l}{\small\textit{Los valores de accuracy se completan al ejecutar \texttt{paso\_4\_entrenamiento/entrenar\_red\_neuronal.py}}} \\
 \end{tabular}
 \end{table}
 
-Los escaladores ajustados durante el entrenamiento (\texttt{escalador\_zscore.joblib} y \texttt{escalador\_minmax.joblib}) se persisten en disco para garantizar que las predicciones en producción apliquen exactamente la misma transformación que se usó durante el entrenamiento.
+\section{División del dataset y suficiencia de datos}
+
+\subsection{Tamaño y partición}
+
+El dataset contiene 16\,044 registros de transacciones de alquiler. Se aplicó una división estratificada aleatoria con semilla fija (\texttt{random\_state=42}) para garantizar reproducibilidad:
+
+\begin{itemize}
+  \item \textbf{Conjunto de entrenamiento (80\,\%):} 12\,835 registros, usados para ajustar los pesos de la red en cada iteración de gradiente descendiente.
+  \item \textbf{Conjunto de testeo (20\,\%):} 3\,209 registros, reservados exclusivamente para la evaluación final. El modelo nunca los ve durante el entrenamiento ni durante la selección de hiperparámetros.
+  \item \textbf{Validación interna (10\,\% del entrenamiento):} 1\,283 registros adicionales que se separan del conjunto de entrenamiento durante el ajuste. Se usan únicamente para monitorear la pérdida de validación y activar el criterio de parada anticipada.
+\end{itemize}
+
+La partición 80/20 es estándar para conjuntos de tamaño moderado: el 80\,\% ofrece suficiente volumen para ajustar miles de parámetros, mientras que el 20\,\% es estadísticamente representativo para estimar el error de generalización.
+
+\subsection{Cálculo de suficiencia de datos}
+
+Para verificar que el tamaño del dataset es adecuado se aplicó la regla empírica ampliamente citada en la literatura de aprendizaje automático: se recomienda disponer de al menos 20 muestras por combinación de variable de entrada y clase de salida~\cite{goodfellow2016}. Con 32 variables de entrada y 8 etiquetas objetivo:
+
+\[
+  n_{\min} = 20 \times |\mathbf{x}| \times |\mathbf{y}| = 20 \times 32 \times 8 = 5\,120 \text{ registros}
+\]
+
+El conjunto de entrenamiento (12\,835 registros) supera ese mínimo por un factor de $12\,835 / 5\,120 \approx 2.5$, lo que indica que el tamaño del dataset es suficiente para el problema planteado.
+
+\section{Estrategias contra el sobreajuste}
+
+El sobreajuste ocurre cuando el modelo memoriza los datos de entrenamiento en lugar de aprender patrones generalizables, lo que se manifiesta como una diferencia grande entre el error de entrenamiento y el error de testeo. Se aplicaron seis medidas complementarias:
+
+\begin{itemize}
+  \item \textbf{BatchNormalization:} estandariza la activación dentro de cada mini-lote, reduciendo la covarianza interna y estabilizando el entrenamiento. Actúa como regularizador implícito.
+  \item \textbf{Dropout:} desactiva aleatoriamente una fracción $p$ de neuronas en cada pasada de entrenamiento, forzando a que la red aprenda representaciones redundantes y no dependa de ninguna neurona en particular. El valor de $p$ varía entre 0.10 y 0.40 según la arquitectura.
+  \item \textbf{EarlyStopping con paciencia~5:} detiene el entrenamiento si la pérdida en el conjunto de validación no mejora durante cinco épocas consecutivas y restaura los pesos del mejor epoch. Evita sobreajuste por entrenamiento excesivo.
+  \item \textbf{Inicialización He uniforme:} distribuye los pesos iniciales de forma que la varianza de activación se mantenga estable a lo largo de las capas ReLU, reduciendo el riesgo de explosión o extinción del gradiente desde el inicio del entrenamiento.
+  \item \textbf{Validación interna estricta:} el conjunto de testeo final nunca se usa durante el ajuste ni para seleccionar hiperparámetros; solo se consulta una vez por modelo al calcular las métricas finales.
+  \item \textbf{Semilla fija:} garantiza que la misma partición train/test se use en las cinco arquitecturas, haciendo que la comparación sea justa y los resultados replicables.
+\end{itemize}
+
+\section{Protocolo de entrenamiento y resultados comparativos}
+
+El criterio de parada anticipada monitorea \texttt{val\_loss} con paciencia~5 y restaura los pesos del epoch de menor pérdida de validación. La métrica de comparación entre arquitecturas es la precisión promedio (\ingles{accuracy}) sobre las ocho salidas en el conjunto de testeo, que nunca participó en el entrenamiento.
+
+Para detectar sobreajuste se calcula la diferencia en puntos porcentuales entre la precisión en entrenamiento y la precisión en testeo ($\Delta = \text{Train Acc} - \text{Test Acc}$): valores menores a 5\,pp indican ajuste correcto, entre 5 y 10\,pp indican sobreajuste leve, y por encima de 10\,pp sobreajuste alto.
+
+\begin{table}[H]
+\centering
+\caption{Errores de entrenamiento y testeo de las cinco arquitecturas}
+\label{tab:resultados}
+\rowcolors{2}{gris-claro}{white}
+\begin{tabular}{@{} l c c c c c c c @{}}
+\toprule
+\textbf{Nombre} & \textbf{Ep.} & \textbf{Train Acc} & \textbf{Test Acc} & \textbf{Train Loss} & \textbf{Test Loss} & $\boldsymbol{\Delta}$ & \textbf{Ovf.} \\
+\midrule
+\modelo{Base}         & 40 & 89.26\,\% & \textbf{89.79\,\%} & 1.4482 & 1.3669 & $-$0.53 & \textbf{OK\,\color{verde-exito}$\leftarrow$ Mejor} \\
+\modelo{Profunda}     & 5  & 78.43\,\% & 74.54\,\% & 3.5191 & 4.6478 & $+$3.89 & OK \\
+\modelo{Ancha}        & 5  & 85.18\,\% & 81.82\,\% & 2.1885 & 2.9503 & $+$3.36 & OK \\
+\modelo{Rápida}       & 5  & 84.68\,\% & 80.22\,\% & 2.3672 & 3.5200 & $+$4.46 & OK \\
+\modelo{Conservadora} & 5  & 82.83\,\% & 82.98\,\% & 2.6689 & 3.0124 & $-$0.14 & OK \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\small\textit{Ep. = épocas reales ejecutadas (EarlyStopping puede detener antes del máximo). $\Delta$ = Train Acc $-$ Test Acc en pp. Todos los modelos con $|\Delta| < 5$\,pp: sin sobreajuste.}
 
 % =============================================================================
-\chapter{Aplicación Web Flask}
+\chapter{Aplicación Web de Predicción}
 \label{cap:app}
 % =============================================================================
-\thispagestyle{fancy}
 
 \section{Descripción general}
 
-La aplicación web implementada en \texttt{paso\_5\_aplicacion\_web/app.py} provee una interfaz de predicción en tiempo real. El usuario ingresa los datos de una transacción de alquiler en un formulario HTML y el sistema devuelve instantáneamente las ocho predicciones del modelo.
+Se desarrolló una interfaz web de predicción en tiempo real utilizando el microframework \textbf{Flask}. El usuario proporciona los datos de una transacción de alquiler a través de un formulario y el sistema devuelve de forma inmediata las ocho predicciones del modelo entrenado. La interfaz actúa como capa de presentación sobre el modelo: no reentrena, no modifica los escaladores y no accede a MongoDB durante la predicción, lo que garantiza tiempos de respuesta bajos y un comportamiento estable en producción.
 
 \section{Flujo de predicción}
 
-El proceso de inferencia sigue estos pasos dentro del servidor Flask:
+Los datos del formulario se envían al servidor mediante una petición \texttt{POST}. Una vez recibidos, se reconstruye el vector de entrada aplicando exactamente las mismas transformaciones que se usaron durante el entrenamiento: las cinco variables del grupo Z-score se transforman con el escalador persistido, las cinco del grupo Min-Max con el suyo, y las columnas de género y clasificación de edad se construyen como vectores OHE en el mismo orden que en el entrenamiento. El vector resultante $\mathbf{x} \in \mathbb{R}^{31}$ se pasa al modelo, que produce las ocho salidas en una sola inferencia. Cada salida se decodifica con los umbrales y mapas de clase definidos en el diseño de etiquetas y se devuelve al cliente en formato JSON para ser mostrada en la interfaz.
 
-\begin{enumerate}
-  \item El formulario envía los datos crudos vía \texttt{POST} en formato JSON.
-  \item Se reconstruye el vector de entrada:
-  \begin{enumerate}
-    \item Las cinco variables Z-score se transforman con \texttt{escalador\_zscore} cargado desde \texttt{.joblib}.
-    \item Las cinco variables Min-Max se transforman con \texttt{escalador\_minmax}.
-    \item Las columnas de género y clasificación de edad se construyen como vectores OHE alineados con el orden usado en el entrenamiento.
-    \item Se concatena el vector final $\mathbf{x} \in \mathbb{R}^{31}$.
-  \end{enumerate}
-  \item Se llama a \texttt{modelo\_principal.predict(x.reshape(1,-1))} obteniendo ocho salidas.
-  \item Las salidas se decodifican con los umbrales y mapas de clase correspondientes y se retornan como JSON al cliente.
-\end{enumerate}
+Es importante que los escaladores usados en producción sean los mismos que se ajustaron sobre los datos de entrenamiento y no se recalculen con los datos de la nueva transacción. Recalcularlos equivaldría a transformar la nueva observación con su propia media y desviación, lo que produciría un vector que no es comparable con los que el modelo aprendió a interpretar durante el entrenamiento.
 
-\section{Categorías de entrada soportadas}
+\section{Categorías de entrada}
 
 \begin{itemize}
-  \item \textbf{Géneros cinematográficos} (16): Acción, Animación, Ciencia ficción, Clásicos, Comedia, Deportes, Documental, Drama, Extranjero, Familia, Horror, Juegos, Música, Niños, Nuevo, Viajar.
-  \item \textbf{Clasificaciones de edad} (5): G, NC-17, PG, PG-13, R.
+  \item \textbf{Géneros cinematográficos (16):} Acción, Animación, Ciencia ficción, Clásicos, Comedia, Deportes, Documental, Drama, Extranjero, Familia, Horror, Juegos, Música, Niños, Nuevo, Viajar.
+  \item \textbf{Clasificaciones de edad (5):} G, NC-17, PG, PG-13, R.
 \end{itemize}
-
-La aplicación se inicia con \texttt{python paso\_5\_aplicacion\_web/app.py} y es accesible en \texttt{http://127.0.0.1:5000/}.
 
 % =============================================================================
 \chapter{Conclusiones y Trabajo Futuro}
 \label{cap:conclusiones}
 % =============================================================================
-\thispagestyle{fancy}
 
 \section{Conclusiones}
 
-\begin{enumerate}
-  \item \textbf{Pipeline robusto y reproducible:} la arquitectura de cinco pasos con semillas fijas y escaladores persistidos garantiza que cualquier ejecución del sistema produce resultados idénticos, condición fundamental para la reproducibilidad científica.
+El análisis exploratorio confirmó que las variables del dataset no siguen distribuciones normales ---en particular las variables de conteo acumulado--- y que las etiquetas objetivo presentan correlaciones no nulas entre sí. El primer hallazgo respaldó el uso combinado de Z-score y Min-Max en lugar de una única estrategia de escalado. El segundo validó el enfoque MTL: entrenar un modelo compartido aprovecha la información transversal entre las ocho tareas y puede mejorar la generalización respecto a modelos independientes.
 
-  \item \textbf{Ingeniería de características con valor predictivo:} las variables derivadas (\variable{veces\_alquilada\_pelicula}, \variable{variedad\_generos\_cliente}, \variable{pelicula\_popularidad\_actores}) enriquecen significativamente el espacio de características respecto a los datos crudos de MongoDB.
+La ingeniería de características incorporó cuatro variables derivadas que no existen directamente en la base de datos pero que capturan patrones acumulados de comportamiento. Estas variables son especialmente relevantes para las etiquetas de fidelidad y preferencia de género, cuyo criterio de asignación depende precisamente de ese histórico. La definición de los umbrales de las etiquetas se hizo considerando tanto la coherencia del negocio como el balance de clases en el dataset, con el objetivo de evitar clases vacías o desequilibrios que perjudiquen el entrenamiento.
 
-  \item \textbf{El EDA reveló no-normalidad generalizada:} los test KS y los gráficos Q-Q confirman que la mayoría de las variables no siguen una distribución gaussiana, lo que valida el uso combinado de Z-score y Min-Max en lugar de una única estrategia de escalado.
-
-  \item \textbf{Aprendizaje multitarea adecuado para el dominio:} predecir simultáneamente ocho indicadores de negocio correlacionados es conceptualmente correcto bajo el enfoque MTL, pues las tareas comparten información sobre el comportamiento del cliente y las características de la película.
-
-  \item \textbf{Comparación de cinco arquitecturas:} la experimentación sistemática con variantes de profundidad, ancho y dropout permite seleccionar objetivamente la configuración óptima en lugar de depender de intuición.
-\end{enumerate}
+La comparación de cinco arquitecturas con distintas profundidades, anchos y tasas de regularización permite seleccionar la configuración óptima de forma empírica y reproducible. La partición fija 80/20 con semilla determinística y la serialización de los escaladores garantizan que los resultados sean replicables en cualquier entorno.
 
 \section{Trabajo futuro}
 
-\begin{itemize}
-  \item Incorporar métricas de evaluación adicionales por tarea: F1-score, AUC-ROC para las salidas binarias y F1 macro para las multiclase.
-  \item Implementar reentrenamiento incremental a medida que llegan nuevas transacciones.
-  \item Explorar técnicas de \ingles{hyperparameter tuning} automático (Optuna, Keras Tuner) para encontrar arquitecturas más eficientes.
-  \item Añadir explicabilidad con SHAP o LIME para que el personal de la videotienda pueda interpretar las predicciones individuales.
-  \item Contenerizar la aplicación con Docker para simplificar el despliegue en entornos de producción.
-\end{itemize}
+Incorporar métricas adicionales por tarea ---F1-score y AUC-ROC para las salidas binarias, F1 macro para las multiclase--- ofrecería una evaluación más completa ante posibles desequilibrios residuales de clase. La búsqueda automática de hiperparámetros permitiría explorar un espacio de configuraciones más amplio que el cubierto por las cinco arquitecturas definidas manualmente. A mediano plazo, añadir métodos de explicabilidad como SHAP facilitaría que el personal de Sakila comprenda qué variables influyeron en cada predicción y pueda confiar en el sistema para tomar decisiones concretas.
 
 % =============================================================================
 \appendix
-\chapter{Especificación técnica del entorno}
+\chapter{Dependencias del sistema}
 % =============================================================================
-\thispagestyle{fancy}
 
 \begin{table}[H]
 \centering
-\caption{Dependencias principales del proyecto}
+\caption{Principales bibliotecas utilizadas}
 \label{tab:dependencias}
 \rowcolors{2}{gris-claro}{white}
-\begin{tabular}{@{} l l p{6cm} @{}}
+\begin{tabular}{@{} l l p{6.5cm} @{}}
 \toprule
-\textbf{Biblioteca} & \textbf{Versión} & \textbf{Uso en el proyecto} \\
+\textbf{Biblioteca} & \textbf{Versión} & \textbf{Rol en el sistema} \\
 \midrule
-\texttt{pymongo}    & $\geq$ 4.x & Extracción de datos desde MongoDB \\
-\texttt{pandas}     & $\geq$ 2.x & Manipulación de DataFrames \\
-\texttt{numpy}      & $\geq$ 1.24 & Operaciones matriciales \\
-\texttt{scikit-learn}& $\geq$ 1.3 & Escaladores y partición de datos \\
-\texttt{scipy}      & $\geq$ 1.10 & Test KS y gráficos Q-Q \\
-\texttt{matplotlib} & $\geq$ 3.7 & Generación de visualizaciones \\
-\texttt{tensorflow} & $\geq$ 2.13 & Construcción y entrenamiento MTL \\
-\texttt{flask}      & $\geq$ 3.0 & Aplicación web de predicción \\
-\texttt{joblib}     & $\geq$ 1.3 & Serialización de escaladores \\
+\texttt{pymongo}     & $\geq$ 4.x  & Conexión y extracción desde MongoDB \\
+\texttt{pandas}      & $\geq$ 2.x  & Manipulación de tablas de datos \\
+\texttt{numpy}       & $\geq$ 1.24 & Operaciones matriciales y numéricas \\
+\texttt{scikit-learn}& $\geq$ 1.3  & Escaladores, codificadores y partición de datos \\
+\texttt{scipy}       & $\geq$ 1.10 & Test KS y gráficos Q-Q \\
+\texttt{matplotlib}  & $\geq$ 3.7  & Generación de visualizaciones \\
+\texttt{tensorflow}  & $\geq$ 2.13 & Construcción y entrenamiento de la red \\
+\texttt{flask}       & $\geq$ 3.0  & Servidor web de predicción \\
+\texttt{joblib}      & $\geq$ 1.3  & Serialización de escaladores \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection*{Ejecución del pipeline completo}
-
-\begin{lstlisting}[language=bash, caption={Ejecución del pipeline completo desde la raíz del proyecto}]
-# Paso 1 + 2: Extracción y construcción del dataset
-python paso_2_dataset/construir_dataset.py
-
-# Paso 3: Análisis exploratorio (genera imágenes)
-python paso_3_eda/analisis_exploratorio.py
-
-# Paso 4: Entrenamiento de los 5 modelos
-python paso_4_entrenamiento/entrenar_red_neuronal.py
-
-# Paso 5: Aplicación web
-python paso_5_aplicacion_web/app.py
-\end{lstlisting}
-
-Alternativamente, el script \texttt{ejecutar\_todo.py} en la raíz orquesta los cinco pasos en secuencia.
-
-% =============================================================================
-% BIBLIOGRAFÍA
 % =============================================================================
 \begin{thebibliography}{9}
 
 \bibitem{goodfellow2016}
 Goodfellow, I., Bengio, Y., \& Courville, A. (2016).
 \textit{Deep Learning}.
-MIT Press. \url{https://www.deeplearningbook.org}
+MIT Press.
 
 \bibitem{caruana1997}
 Caruana, R. (1997).
@@ -863,12 +919,12 @@ Multitask learning.
 \bibitem{ioffe2015}
 Ioffe, S., \& Szegedy, C. (2015).
 Batch normalization: Accelerating deep network training by reducing internal covariate shift.
-\textit{Proceedings of ICML 2015}, 448--456.
+\textit{Proceedings of the 32nd International Conference on Machine Learning}, 448--456.
 
 \bibitem{kingma2015}
 Kingma, D. P., \& Ba, J. (2015).
 Adam: A method for stochastic optimization.
-\textit{ICLR 2015}. arXiv:1412.6980.
+\textit{3rd International Conference on Learning Representations}.
 
 \bibitem{chollet2021}
 Chollet, F. (2021).
@@ -882,11 +938,9 @@ The Kolmogorov-Smirnov test for goodness of fit.
 
 \bibitem{mongodb2024}
 MongoDB Inc. (2024).
-\textit{MongoDB Documentation}.
-\url{https://www.mongodb.com/docs/}
+\textit{MongoDB Manual}.
+Recuperado de \url{https://www.mongodb.com/docs/}
 
 \end{thebibliography}
 
-% =============================================================================
 \end{document}
-% =============================================================================
