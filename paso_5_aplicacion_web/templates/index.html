@@ -546,6 +546,7 @@
                     </select>
                 </div>
 
+
                 <button type="submit" class="btn-predict" {% if not model_ready %}disabled style="opacity:0.5; cursor:not-allowed;"{% endif %}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6z"/>
@@ -713,6 +714,77 @@
         </section>
     </main>
 
+    <!-- ═══ SECCIÓN DE MÉTRICAS ════════════════════════════════════════════ -->
+    <section id="seccion-metricas" style="width:100%; max-width:1400px; margin:0 auto; padding:0 5% 50px;">
+
+        <div class="card" style="margin-bottom:24px;">
+            <h2 style="margin-bottom:18px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke:var(--accent-emerald);">
+                    <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                </svg>
+                División del Dataset y Suficiencia de Datos
+            </h2>
+            <div id="dataset-info" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:16px;">
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px; text-align:center;">
+                    <div style="font-size:28px; font-weight:700; color:var(--accent-violet); font-family:'Outfit',sans-serif;" id="stat-total">—</div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Total de registros</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px; text-align:center;">
+                    <div style="font-size:28px; font-weight:700; color:var(--accent-cyan); font-family:'Outfit',sans-serif;" id="stat-train">—</div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Entrenamiento (80%)</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px; text-align:center;">
+                    <div style="font-size:28px; font-weight:700; color:var(--accent-rose); font-family:'Outfit',sans-serif;" id="stat-test">—</div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Testeo (20%)</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px; text-align:center;">
+                    <div style="font-size:28px; font-weight:700; color:#f59e0b; font-family:'Outfit',sans-serif;" id="stat-factor">—×</div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Factor sobre mínimo recomendado</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px; text-align:center;">
+                    <div style="font-size:28px; font-weight:700; color:var(--accent-emerald); font-family:'Outfit',sans-serif;" id="stat-min">—</div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Mínimo recomendado (20×var×salidas)</div>
+                </div>
+            </div>
+            <div style="margin-top:18px; display:flex; flex-wrap:wrap; gap:10px;" id="antiov-tags"></div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom:18px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke:var(--accent-violet);">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                </svg>
+                Error de Entrenamiento vs. Error de Testeo — 5 Modelos
+            </h2>
+            <div style="overflow-x:auto;">
+                <table id="tabla-metricas" style="width:100%; border-collapse:collapse; font-size:13px;">
+                    <thead>
+                        <tr style="color:var(--text-secondary); font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">
+                            <th style="padding:10px 12px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.07);">Modelo</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Optimizador</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Act.</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Épocas</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Train Acc.</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Test Acc.</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Train Loss</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Test Loss</th>
+                            <th style="padding:10px 12px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">Gap Ovf.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-metricas">
+                        <tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-secondary);">Cargando métricas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size:11px; color:var(--text-secondary); margin-top:12px;">
+                Gap Ovf. = Train Acc. − Test Acc. &nbsp;|&nbsp;
+                <span style="color:var(--accent-emerald);">■</span> OK (&lt;5 pp) &nbsp;
+                <span style="color:#f59e0b;">■</span> Leve (5–10 pp) &nbsp;
+                <span style="color:var(--accent-rose);">■</span> Alto (&gt;10 pp)
+            </p>
+        </div>
+    </section>
+
     <footer>
         <p>Universidad Técnica de Ambato - Carrera de Software - Inteligencia de Negocios - Proyecto BI3</p>
     </footer>
@@ -825,6 +897,54 @@
                 document.getElementById('placeholder').style.display = 'block';
             }
         });
+
+        // ── Carga de métricas de entrenamiento ─────────────────────────────
+        async function cargarMetricas() {
+            try {
+                const res = await fetch('/metricas');
+                if (!res.ok) return;
+                const m = await res.json();
+
+                // Estadísticas del dataset
+                document.getElementById('stat-total').innerText = m.dataset.total_registros.toLocaleString();
+                document.getElementById('stat-train').innerText = m.dataset.n_entrenamiento.toLocaleString();
+                document.getElementById('stat-test').innerText  = m.dataset.n_testeo.toLocaleString();
+                document.getElementById('stat-factor').innerText = m.dataset.factor_cobertura + '×';
+                document.getElementById('stat-min').innerText   = m.dataset.min_recomendado.toLocaleString();
+
+                // Tags anti-overfitting
+                const tagsDiv = document.getElementById('antiov-tags');
+                tagsDiv.innerHTML = '<span style="font-size:12px; color:var(--text-secondary); align-self:center; margin-right:4px;">Anti-overfitting:</span>';
+                (m.tecnicas_anti_overfitting || []).forEach(t => {
+                    tagsDiv.innerHTML += `<span style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:var(--accent-emerald); font-size:11px; padding:3px 10px; border-radius:12px;">${t}</span>`;
+                });
+
+                // Tabla de modelos
+                const tbody = document.getElementById('tbody-metricas');
+                tbody.innerHTML = '';
+                const mejorNombre = m.mejor_modelo;
+                m.modelos.forEach(mod => {
+                    const esMejor = mod['Nombre'] === mejorNombre;
+                    const gap     = mod['Gap pp'];
+                    const ovfColor = gap < 5 ? 'var(--accent-emerald)' : gap < 10 ? '#f59e0b' : 'var(--accent-rose)';
+                    tbody.innerHTML += `
+                    <tr style="${esMejor ? 'background:rgba(139,92,246,0.07);' : ''} border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <td style="padding:10px 12px; font-weight:${esMejor?'600':'400'};">
+                            ${esMejor ? '<span style="color:var(--accent-violet);">★ </span>' : ''}${mod['Nombre']}
+                        </td>
+                        <td style="padding:10px 12px; text-align:center; color:var(--text-secondary); font-size:12px;">${mod['Optimizador']}</td>
+                        <td style="padding:10px 12px; text-align:center; color:var(--text-secondary); font-size:12px;">${mod['Activación']}</td>
+                        <td style="padding:10px 12px; text-align:center;">${mod['Épocas reales']}/${mod['Épocas máx']}</td>
+                        <td style="padding:10px 12px; text-align:center; color:var(--accent-cyan);">${mod['Train Acc %']}%</td>
+                        <td style="padding:10px 12px; text-align:center; font-weight:600; color:${esMejor?'var(--accent-emerald)':'var(--text-primary)'};">${mod['Test Acc %']}%</td>
+                        <td style="padding:10px 12px; text-align:center; color:var(--text-secondary);">${mod['Train Loss']}</td>
+                        <td style="padding:10px 12px; text-align:center; color:var(--text-secondary);">${mod['Test Loss']}</td>
+                        <td style="padding:10px 12px; text-align:center; color:${ovfColor}; font-weight:600;">${gap > 0 ? '+' : ''}${gap} pp</td>
+                    </tr>`;
+                });
+            } catch(e) { /* métricas no disponibles aún */ }
+        }
+        cargarMetricas();
     </script>
 </body>
 </html>

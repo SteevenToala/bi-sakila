@@ -32,6 +32,7 @@ RUTA_MODELO_PRINCIPAL   = os.path.join(DIRECTORIO_PROYECTO, "paso_4_entrenamient
 RUTA_ESCALADOR_ZSCORE   = os.path.join(DIRECTORIO_PROYECTO, "paso_4_entrenamiento", "escalador_zscore.joblib")
 RUTA_ESCALADOR_MINMAX   = os.path.join(DIRECTORIO_PROYECTO, "paso_4_entrenamiento", "escalador_minmax.joblib")
 RUTA_DATASET_NEURONAL   = os.path.join(DIRECTORIO_PROYECTO, "paso_2_dataset", "dataset_neuronal.csv")
+RUTA_METRICAS_JSON      = os.path.join(DIRECTORIO_PROYECTO, "paso_4_entrenamiento", "metricas_entrenamiento.json")
 
 # --------------------------------------------------------------------------
 # Configuración de Flask
@@ -46,6 +47,10 @@ GENEROS_DE_PELICULAS = [
     "Documental", "Drama", "Extranjero", "Familia", "Horror", "Juegos",
     "Música", "Niños", "Nuevo", "Viajar",
 ]
+
+# LabelEncoder ordena alfabéticamente por código Unicode, igual que sorted().
+# Este mapa reproduce exactamente el id_genero que se usó en el entrenamiento.
+ID_GENERO_MAP = {genero: idx for idx, genero in enumerate(sorted(GENEROS_DE_PELICULAS))}
 
 CLASIFICACIONES_DE_EDAD = ["G", "NC-17", "PG", "PG-13", "R"]
 
@@ -137,6 +142,9 @@ def preparar_vector_de_entrada(datos_del_formulario: dict) -> np.ndarray:
     # ---- Construir fila del DataFrame ----
     fila_de_prediccion = dict(variables_numericas)
 
+    # id_genero: codificación ordinal del género (igual que LabelEncoder del entrenamiento)
+    fila_de_prediccion["id_genero"] = float(ID_GENERO_MAP.get(genero_seleccionado, 0))
+
     # One-Hot Encoding de género
     for genero in GENEROS_DE_PELICULAS:
         fila_de_prediccion[f"cat_{genero}"] = 1.0 if genero == genero_seleccionado else 0.0
@@ -152,8 +160,11 @@ def preparar_vector_de_entrada(datos_del_formulario: dict) -> np.ndarray:
     df_prediccion[COLUMNAS_NORMALIZADAS_MINMAX]   = escalador_minmax.transform(df_prediccion[COLUMNAS_NORMALIZADAS_MINMAX])
 
     # ---- Ordenar columnas exactamente igual que el dataset de entrenamiento ----
-    columnas_del_entrenamiento = pd.read_csv(RUTA_DATASET_NEURONAL, nrows=0, encoding="utf-8")
-    orden_columnas_de_entrada  = [c for c in columnas_del_entrenamiento.columns if c not in NOMBRES_ETIQUETAS_OBJETIVO]
+    # nrows=1 para que pandas infiera los tipos correctamente y select_dtypes
+    # devuelva solo las columnas numéricas (igual que la lógica del entrenamiento).
+    df_muestra = pd.read_csv(RUTA_DATASET_NEURONAL, nrows=1, encoding="utf-8")
+    columnas_numericas_csv = df_muestra.select_dtypes(include=[np.number]).columns.tolist()
+    orden_columnas_de_entrada = [c for c in columnas_numericas_csv if c not in NOMBRES_ETIQUETAS_OBJETIVO]
 
     return df_prediccion[orden_columnas_de_entrada].values
 
@@ -227,13 +238,22 @@ def pagina_inicio():
     Renderiza la página principal del sistema de predicción.
     Verifica si el modelo ya fue entrenado para mostrar el estado correcto.
     """
-    modelo_esta_listo = os.path.exists(RUTA_MODELO_PRINCIPAL)
     return render_template(
         "index.html",
-        modelo_esta_listo=modelo_esta_listo,
+        model_ready=os.path.exists(RUTA_MODELO_PRINCIPAL),
         generos=GENEROS_DE_PELICULAS,
         clasificaciones=CLASIFICACIONES_DE_EDAD,
     )
+
+
+@app.route("/metricas")
+def endpoint_metricas():
+    """Devuelve las métricas de entrenamiento guardadas como JSON."""
+    import json
+    if not os.path.exists(RUTA_METRICAS_JSON):
+        return jsonify({"error": "No hay métricas. Ejecuta primero el entrenamiento."}), 404
+    with open(RUTA_METRICAS_JSON, encoding="utf-8") as f:
+        return jsonify(json.load(f))
 
 
 @app.route("/predict", methods=["POST"])
